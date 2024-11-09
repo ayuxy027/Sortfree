@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Sortfree.AI",
+  "version": "0.4",
+  "description": "This extension provides input fields and a sort button.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "image.png"
+    }
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["response.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

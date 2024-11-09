@@ -33,8 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 func: (titleClass, descriptionClass) => {
                     const titles = Array.from(document.getElementsByClassName(titleClass)).map(element => element.innerText);
                     const descriptions = Array.from(document.getElementsByClassName(descriptionClass)).map(element => element.innerText);
-                    // const mergedContent = titles.concat(descriptions).join(' ');
-                    // instead of joining the titles and descriptions after the entire array is created, we should join them as we create the array
+
                     const mergedContent = titles.map((title, index) => ', title:' + title + ' description of title before: ' + descriptions[index]).join(' ');
                 
                     return mergedContent;
@@ -72,10 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     contents: [
                         {
-                            role: "user",
                             parts: [
                                 {
-                                    text: `Consider yourself as data analyst who is good at what he does, now you are provided a string of titles and description. Sort it according to given filter, and remove all tiles which are not important. Here is the filter = ${userInput}. Also give the respone in <table> so it'll be ez to render.\n Here is the body Content = \n` + bodyContent
+                                    text: `Consider yourself as data analyst who is good at what he does, now you are provided a string of titles and description. Sort it according to given filter, and remove all tiles which are not important. Here is the filter = ${userInput}. Also don't change the text/characters of the selected_element/filtered_elements, as it'll used to rerender the page.\n Here is the body Content = \n` + bodyContent
                                 }
                             ]
                         }
@@ -83,9 +81,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     generationConfig: {
                         temperature: 1,
                         topK: 40,
-                        topP: 0.95,
-                        maxOutputTokens: 8192,
-                        responseMimeType: "text/plain"
+                        response_mime_type: "application/json",
+                        response_schema: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    title: { type: "STRING" },
+                                    description: { type: "STRING" }
+                                }
+                            }
+                        }
                     }
                 })
             });

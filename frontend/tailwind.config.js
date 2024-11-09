@@ -85,6 +85,8 @@ module.exports = {
         'ambient-dark': '0px 4px 16px -4px rgba(0, 0, 0, 0.2)',
       },
       backgroundImage: {
+        'noise-light': "url('/noise-light.png')",
+        'noise-dark': "url('/noise-dark.png')",
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-subtle': 'linear-gradient(to bottom right, var(--tw-gradient-stops))',
       },

@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "name": "Table Sorter and Filter",
+    "version": "1.0",
+    "description": "Sort and filter tables based on user input.",
+    "permissions": [
+        "activeTab", 
+        "scripting", 
+        "tabs",
+        "storage"
+    ],
+    "action": {
+      "default_popup": "popup.html"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "host_permissions": ["http://localhost:5000/*"]
+  }

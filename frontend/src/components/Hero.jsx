@@ -156,7 +156,7 @@ const Hero = ({ darkMode }) => {
                 onClick={() => loginWithRedirect()}
                 className="px-8 py-3 rounded-md font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 transition-all duration-300 flex items-center justify-center shadow-ambient hover:shadow-ambient-lg"
               >
-                Sign In to Get Started <ArrowRight className="ml-2 h-5 w-5" />
+                Get Started <ArrowRight className="ml-2 h-5 w-5" />
               </motion.button>
             ) : (
               <>

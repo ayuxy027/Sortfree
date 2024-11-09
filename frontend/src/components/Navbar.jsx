@@ -1,4 +1,3 @@
-// Navbar.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Moon, Sun, LogOut, User, Loader2, Bell } from 'lucide-react';
@@ -19,14 +18,12 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  // Fetch user token and handle notifications
   useEffect(() => {
     const fetchUserDetails = async () => {
       if (isAuthenticated) {
         try {
           const token = await getAccessTokenSilently();
           setUserToken(token);
-          // Simulate notifications - replace with actual API calls
           setNotifications([
             { id: 1, text: "Welcome back! 👋", time: "just now" },
             { id: 2, text: "Your last login was from a new device", time: "2h ago" },
@@ -71,7 +68,6 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
 
   const UserProfile = () => (
     <div className="relative flex items-center gap-4">
-      {/* Notifications Bell */}
       <motion.div className="relative">
         <motion.button
           variants={buttonVariants}
@@ -88,7 +84,6 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
           )}
         </motion.button>
 
-        {/* Notifications Dropdown */}
         <AnimatePresence>
           {showNotifications && (
             <motion.div
@@ -135,7 +130,6 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
         </AnimatePresence>
       </motion.div>
 
-      {/* User Menu */}
       <div className="relative">
         <motion.button
           variants={buttonVariants}
@@ -242,18 +236,17 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
 
   return (
     <motion.nav 
-      initial={{ y: -100 }}
+      initial={{ y: 0 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`fixed w-full z-50 backdrop-blur-sm ${
+      className={`w-full z-50 ${
         darkMode 
-          ? 'bg-surface-dark/85 border-b border-secondary-800/20' 
-          : 'bg-surface-light/85 border-b border-primary-100'
+          ? 'bg-surface-dark border-b border-secondary-800/20' 
+          : 'bg-surface-light border-b border-primary-100'
       } transition-all duration-300`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          {/* Logo */}
           <motion.a
             href="/"
             variants={buttonVariants}
@@ -263,9 +256,7 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
             SortFree.AI
           </motion.a>
 
-          {/* Right Section */}
           <div className="flex items-center gap-4">
-            {/* Theme Toggle */}
             <motion.button
               variants={buttonVariants}
               whileHover="hover"
@@ -280,7 +271,6 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
               {darkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
             </motion.button>
 
-            {/* Auth Section */}
             {isLoading ? (
               <Loader2 className="w-6 h-6 animate-spin" />
             ) : (

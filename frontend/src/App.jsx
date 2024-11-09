@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import UserProfile from './components/UserProfile';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -66,14 +65,6 @@ function App() {
           <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
           <Routes>
             <Route path="/" element={<Hero darkMode={darkMode} />} />
-            <Route 
-              path="/profile" 
-              element={
-                <ProtectedRoute>
-                  <UserProfile darkMode={darkMode} />
-                </ProtectedRoute>
-              } 
-            />
           </Routes>
         </div>
       </Router>

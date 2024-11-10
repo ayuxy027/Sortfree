@@ -90,7 +90,7 @@ Requirements:
   },
 
   async callAPI(prompt) {
-    const API_KEY = 'AIzaSyAA2louIo-1d3qzM_AaneYdZPHqu7e6FlQ';
+    const API_KEY = '';
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
       {

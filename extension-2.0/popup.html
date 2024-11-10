@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SortFree</title>
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --text: #1e293b;
+        --error: #dc2626;
+        --success: #059669;
+      }
+
+      body {
+        width: 320px;
+        padding: 0.5rem;
+        font-family: system-ui, -apple-system, sans-serif;
+        background: transparent;
+        margin: 0;
+      }
+
+      .container {
+        background: rgba(255, 255, 255, 0.92);
+        padding: 1rem;
+        border-radius: 0.875rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08),
+          0 0 0 1px rgba(0, 0, 0, 0.03);
+        backdrop-filter: blur(8px);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        margin-bottom: 0.875rem;
+      }
+
+      .logo svg {
+        width: 20px;
+        height: 20px;
+        color: var(--primary);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.125rem;
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .input-group {
+        margin-bottom: 0.875rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.375rem;
+        font-size: 0.813rem;
+        color: #475569;
+        font-weight: 500;
+      }
+
+      textarea {
+        width: 100%;
+        padding: 0.625rem;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 0.625rem;
+        font-size: 0.813rem;
+        margin-bottom: 0.375rem;
+        box-sizing: border-box;
+        resize: vertical;
+        min-height: 70px;
+        font-family: inherit;
+        transition: all 0.2s;
+        background: rgba(255, 255, 255, 0.8);
+      }
+
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        background: rgba(255, 255, 255, 0.95);
+      }
+
+      .suggestions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.875rem;
+      }
+
+      .suggestion {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        background: rgba(37, 99, 235, 0.1);
+        color: var(--primary);
+        border-radius: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .suggestion:hover {
+        background: rgba(37, 99, 235, 0.2);
+      }
+
+      button {
+        width: 100%;
+        padding: 0.625rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 0.625rem;
+        font-weight: 600;
+        font-size: 0.813rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.375rem;
+      }
+
+      button:hover:not(:disabled) {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+      }
+
+      button:disabled {
+        background: rgba(147, 197, 253, 0.9);
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .message {
+        font-size: 0.75rem;
+        margin-top: 0.625rem;
+        padding: 0.625rem;
+        border-radius: 0.625rem;
+        display: none;
+        backdrop-filter: blur(8px);
+      }
+
+      .error {
+        color: var(--error);
+        background: rgba(254, 226, 226, 0.9);
+      }
+
+      .success {
+        color: var(--success);
+        background: rgba(209, 250, 229, 0.9);
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid #ffffff;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        display: none;
+      }
+
+      button.processing .spinner {
+        display: inline-block;
+      }
+
+      .keyboard-shortcut {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 0.5rem;
+        font-size: 0.75rem;
+        color: #64748b;
+      }
+
+      .key {
+        padding: 0.125rem 0.375rem;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 0.25rem;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M3 7c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v2c0 1.1-.9 2-2 2h-14c-1.1 0-2-.9-2-2v-2zm0 8c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v2c0 1.1-.9 2-2 2h-14c-1.1 0-2-.9-2-2v-2z"
+          />
+        </svg>
+        <h1>SortFree</h1>
+      </div>
+      <div class="input-group">
+        <label for="prompt">Sort/Filter Prompt</label>
+        <textarea
+          id="prompt"
+          placeholder="e.g., Sort by price from lowest to highest"
+        ></textarea>
+        <div class="suggestions">
+          <span class="suggestion">Sort by date</span>
+          <span class="suggestion">Group by category</span>
+          <span class="suggestion">Filter newest first</span>
+        </div>
+      </div>
+      <button id="processBtn">
+        <div class="spinner"></div>
+        <span>Process Content</span>
+      </button>
+      <div id="error" class="message error"></div>
+      <div id="success" class="message success"></div>
+      <div class="keyboard-shortcut">
+        Shortcut: <span class="key">Enter</span>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

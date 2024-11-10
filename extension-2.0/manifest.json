@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "SortFree- v1000",
+  "version": "1.0",
+  "description": "Sort and organize any web content using natural language prompts",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": [
+    "<all_urls>",
+    "https://generativelanguage.googleapis.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+  ,
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

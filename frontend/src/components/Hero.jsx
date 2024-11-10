@@ -1,8 +1,9 @@
-// Hero.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Zap, Brain, Sparkles, Sliders, ArrowRight } from 'lucide-react';
+import { Zap, Brain, Sparkles, Sliders, ArrowRight, Download } from 'lucide-react';
+import confetti from 'canvas-confetti';
+import ContentSortingLabel from './ContentSortingLabel';
 
 const Hero = ({ darkMode }) => {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
@@ -22,14 +23,34 @@ const Hero = ({ darkMode }) => {
     }
   };
 
-  const [stats, setStats] = useState([
-    { id: 1, label: "AI Powered", value: "Gemini 1.5 Pro", icon: Brain, position: 0 },
-    { id: 2, label: "Context Window", value: "2 Million", icon: Sparkles, position: 1 },
-    { id: 3, label: "Sorting Speed", value: "Super Fast", icon: Zap, position: 2 },
+  const shimmerVariants = {
+    initial: { x: '-100%', opacity: 0.5 },
+    animate: { 
+      x: '100%', 
+      opacity: 0.8,
+      transition: { 
+        repeat: Infinity,
+        duration: 3,
+        ease: 'linear'
+      }
+    }
+  };
+
+  const [stats] = useState([
+    { id: 1, label: "Leverage Gemini 1.5 Pro ", value: "AI Powered", icon: Brain, position: 0 },
+    { id: 2, label: "2 Million Tokens ", value: "Context", icon: Sparkles, position: 1 },
+    { id: 3, label: "Load content at warp speed", value: "Super Fast", icon: Zap, position: 2 },
     { id: 4, label: "Your Way :)", value: "Customization?", icon: Sliders, position: 3 },
   ]);
 
-  const [draggingId, setDraggingId] = useState(null);
+  const launchConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#3ea4a7', '#358589', '#2f6c70'],
+    });
+  };
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -45,78 +66,28 @@ const Hero = ({ darkMode }) => {
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
-  const getPositionX = (position) => {
-    const gap = 24;
-    return position * (cardWidth + gap);
-  };
-
-  const handleDragStart = (id) => setDraggingId(id);
-
-  const findNearestPosition = (dragX) => {
-    const positions = [0, 1, 2, 3];
-    let nearestPosition = null;
-    let minDistance = Infinity;
-
-    positions.forEach(position => {
-      const posX = getPositionX(position);
-      const distance = Math.abs(dragX - posX);
-      if (distance < minDistance) {
-        minDistance = distance;
-        nearestPosition = position;
-      }
-    });
-
-    return minDistance < cardWidth / 2 ? nearestPosition : null;
-  };
-
-  const swapPositions = (fromId, toPosition) => {
-    setStats(prevStats => {
-      const newStats = [...prevStats];
-      const fromCard = newStats.find(s => s.id === fromId);
-      const toCard = newStats.find(s => s.position === toPosition);
-      
-      if (fromCard && toCard) {
-        const tempPosition = fromCard.position;
-        fromCard.position = toCard.position;
-        toCard.position = tempPosition;
-      }
-      
-      return newStats;
-    });
-  };
-
-  const handleDragEnd = (event, info, id) => {
-    const currentCard = stats.find(s => s.id === id);
-    if (!currentCard) return;
-
-    const dragX = info.offset.x + getPositionX(currentCard.position);
-    const nearestPosition = findNearestPosition(dragX);
-    
-    if (nearestPosition !== null && nearestPosition !== currentCard.position) {
-      swapPositions(id, nearestPosition);
-    }
-    
-    setDraggingId(null);
-  };
-
   return (
     <motion.section 
       initial="hidden"
       animate="visible"
       variants={heroVariants}
-      className={`relative pt-24 pb-32 overflow-hidden
+      className={`relative pt-20 pb-32 overflow-hidden
         ${darkMode 
-          ? 'bg-gradient-to-br from-background-dark via-background-dark to-primary-950/30' 
-          : 'bg-gradient-to-br from-background-light via-background-light to-primary-50'}`}
+          ? 'bg-gradient-to-br from-background-dark via-primary-950/20 to-primary-950/40' 
+          : 'bg-gradient-to-br from-background-light via-primary-100/50 to-primary-200/30'}`}
     >
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-radial from-primary-500/5 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-radial from-primary-500/10 to-transparent"></div>
         <div className={`absolute inset-0 opacity-35 
           ${darkMode ? 'bg-[url("/noise-dark.png")]' : 'bg-[url("/noise-light.png")]'}`}
         ></div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="mb-8">
+          <ContentSortingLabel darkMode={darkMode} />
+        </div>
+
         <motion.div 
           variants={heroVariants}
           className="max-w-4xl mx-auto text-center"
@@ -129,7 +100,7 @@ const Hero = ({ darkMode }) => {
             <motion.span
               initial={{ backgroundColor: 'rgba(0,0,0,0)' }}
               animate={{ 
-                backgroundColor: darkMode ? 'rgba(62,164,167,0.15)' : 'rgba(62,164,167,0.1)',
+                backgroundColor: darkMode ? 'rgba(62,164,167,0.2)' : 'rgba(62,164,167,0.15)',
               }}
               transition={{ duration: 0.5 }}
               className="px-2 rounded-md relative inline-block text-primary-500"
@@ -154,8 +125,14 @@ const Hero = ({ darkMode }) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => loginWithRedirect()}
-                className="px-8 py-3 rounded-md font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 transition-all duration-300 flex items-center justify-center shadow-ambient hover:shadow-ambient-lg"
+                className="relative px-8 py-3 rounded-md font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 transition-all duration-300 flex items-center justify-center shadow-ambient hover:shadow-ambient-lg overflow-hidden"
               >
+                <motion.div
+                  variants={shimmerVariants}
+                  initial="initial"
+                  animate="animate"
+                  className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                />
                 Get Started <ArrowRight className="ml-2 h-5 w-5" />
               </motion.button>
             ) : (
@@ -170,72 +147,40 @@ const Hero = ({ darkMode }) => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`px-8 py-3 rounded-md font-semibold ${
-                    darkMode 
-                      ? 'text-text-dark-primary bg-secondary-800 hover:bg-secondary-700' 
-                      : 'text-text-light-primary bg-white hover:bg-primary-50'
-                  } transition-all duration-300 shadow-ambient hover:shadow-ambient-lg`}
+                  onClick={launchConfetti}
+                  className="px-8 py-3 rounded-md font-semibold text-white bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 transition-all duration-300 flex items-center justify-center shadow-ambient hover:shadow-ambient-lg"
                 >
-                  Learn More
+                  <Download className="mr-2 h-5 w-5" />
+                  Download Extension
                 </motion.button>
               </>
             )}
           </motion.div>
 
-          <div ref={containerRef} className="relative h-80 max-w-5xl mx-auto mt-16">
-            <AnimatePresence>
-              {containerWidth > 0 && stats.sort((a, b) => a.position - b.position).map((stat) => {
+          <div ref={containerRef} className="relative h-96 max-w-5xl mx-auto mt-20">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {stats.map((stat) => {
                 const Icon = stat.icon;
-                const positionX = getPositionX(stat.position);
-                
                 return (
                   <motion.div
                     key={stat.id}
                     layout
-                    initial={false}
-                    animate={{
-                      x: positionX,
-                      scale: draggingId === stat.id ? 1.05 : 1,
-                      zIndex: draggingId === stat.id ? 2 : 1,
-                    }}
-                    drag="x"
-                    dragConstraints={{
-                      left: 0,
-                      right: containerWidth - cardWidth - 24
-                    }}
-                    dragElastic={0.1}
-                    dragMomentum={false}
-                    onDragStart={() => handleDragStart(stat.id)}
-                    onDragEnd={(e, info) => handleDragEnd(e, info, stat.id)}
-                    style={{
-                      position: 'absolute',
-                      width: cardWidth,
-                      left: 0,
-                    }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    whileHover={{ y: -5 }}
+                    transition={{ duration: 0.3 }}
                     className={`
-                      relative p-6 rounded-2xl
+                      p-6 rounded-2xl
                       ${darkMode 
                         ? 'bg-surface-dark/90 border-secondary-800/50' 
                         : 'bg-surface-light/90 border-primary-200/50'}
                       border-2
                       backdrop-blur-sm
                       transition-all duration-300
-                      cursor-grab active:cursor-grabbing
                       hover:shadow-ambient-lg
                     `}
                   >
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <motion.div 
-                        whileHover={{ scale: 1.1 }}
-                        className="w-6 h-8 bg-gradient-to-b from-secondary-300 to-secondary-400 rounded-t-full shadow-sm"
-                        style={{ 
-                          clipPath: 'polygon(30% 0, 70% 0, 100% 100%, 50% 85%, 0 100%)',
-                          transform: 'perspective(100px) rotateX(5deg)'
-                        }}
-                      />
-                    </div>
-                    
-                    <div className="flex flex-col items-center gap-4 mt-2">
+                    <div className="flex flex-col items-center gap-4">
                       <motion.div 
                         whileHover={{ scale: 1.1 }}
                         className={`
@@ -260,7 +205,7 @@ const Hero = ({ darkMode }) => {
                   </motion.div>
                 );
               })}
-            </AnimatePresence>
+            </div>
           </div>
         </motion.div>
       </div>

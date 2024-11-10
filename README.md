@@ -13,6 +13,7 @@ Introducing an AI-powered web extension that taps into the Gemini API to intelli
 2. Auth0
 3. React JS
 4. Vercel
+5. Github Copilot
 
 Open for ideas and thoughts ⭐
 

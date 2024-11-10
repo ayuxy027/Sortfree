@@ -113,7 +113,7 @@ const Hero = ({ darkMode }) => {
             variants={heroVariants}
             className={`mt-6 text-xl ${darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'} max-w-3xl mx-auto`}
           >
-            Effortlessly sort and organize web content using AI-powered custom sorting. Just paste the class or ID, add your parameters, and let SortFree.AI do the rest.
+            Effortlessly sort your web with AI. Paste, set, and let Sortfree  work its magic.
           </motion.p>
 
           <motion.div

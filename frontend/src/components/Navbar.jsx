@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+"use client"
+
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Bell, Sun, Moon, LogOut } from 'lucide-react';
 
 export default function Navbar({ darkMode, toggleDarkMode }) {
   const { 
@@ -8,38 +11,70 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
     user, 
     loginWithRedirect, 
     logout, 
-    isLoading,
-    getAccessTokenSilently 
+    isLoading 
   } = useAuth0();
 
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [userToken, setUserToken] = useState(null);
-  const [notifications, setNotifications] = useState([
+  
+  // Refs for click outside handling
+  const userMenuRef = useRef(null);
+  const notificationRef = useRef(null);
+  
+  const notifications = [
     { id: 1, text: "Welcome back! 👋", time: "just now" },
     { id: 2, text: "Your last login was from a new device", time: "2h ago" },
     { id: 3, text: "Check out new AI features!", time: "1d ago" },
-  ]);
+  ];
+
+  // Handle click outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close other menu when one opens
+  useEffect(() => {
+    if (showUserMenu) setShowNotifications(false);
+  }, [showUserMenu]);
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      if (isAuthenticated) {
-        try {
-          const token = await getAccessTokenSilently();
-          setUserToken(token);
-        } catch (error) {
-          console.error("Error fetching token:", error);
-        }
-      }
-    };
-
-    fetchUserDetails();
-  }, [isAuthenticated, getAccessTokenSilently]);
+    if (showNotifications) setShowUserMenu(false);
+  }, [showNotifications]);
 
   const menuVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.2 } },
-    exit: { opacity: 0, y: -20, transition: { duration: 0.2 } }
+    hidden: { 
+      opacity: 0,
+      y: -20,
+      scale: 0.95
+    },
+    visible: { 
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 30
+      }
+    },
+    exit: { 
+      opacity: 0,
+      y: -20,
+      scale: 0.95,
+      transition: {
+        duration: 0.2
+      }
+    }
   };
 
   const buttonVariants = {
@@ -52,13 +87,13 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
       variants={buttonVariants}
       whileHover="hover"
       whileTap="tap"
-      onClick={() => loginWithRedirect({
-        appState: { returnTo: window.location.pathname }
-      })}
-      className={`px-6 py-2.5 text-lg font-semibold text-white rounded-lg
+      onClick={() => loginWithRedirect()}
+      className={`
+        px-6 py-2.5 text-lg font-semibold text-white rounded-lg
         bg-gradient-to-r from-primary-500 to-primary-600 
         hover:from-primary-600 hover:to-primary-700 
-        transition-all duration-300 shadow-ambient hover:shadow-ambient-lg`}
+        transition-all duration-300 shadow-ambient hover:shadow-ambient-lg
+      `}
     >
       Sign In
     </motion.button>
@@ -66,36 +101,40 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
 
   const UserProfile = () => (
     <div className="relative flex items-center gap-4">
-      <motion.div className="relative">
+      {/* Notifications */}
+      <div className="relative" ref={notificationRef}>
         <motion.button
           variants={buttonVariants}
           whileHover="hover"
           whileTap="tap"
           onClick={() => setShowNotifications(!showNotifications)}
-          className={`p-2 rounded-full relative ${
-            darkMode ? 'hover:bg-secondary-800/50' : 'hover:bg-primary-50'
-          }`}
+          className={`
+            p-2 rounded-full relative
+            ${darkMode ? 'hover:bg-secondary-800/50' : 'hover:bg-primary-50'}
+            transition-colors duration-200
+          `}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className={`w-6 h-6 ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-          </svg>
+          <Bell className={`w-6 h-6 ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'}`} />
           {notifications.length > 0 && (
             <span className="absolute top-0 right-0 w-2 h-2 bg-primary-500 rounded-full" />
           )}
         </motion.button>
 
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {showNotifications && (
             <motion.div
               initial="hidden"
               animate="visible"
               exit="exit"
               variants={menuVariants}
-              className={`absolute right-0 mt-2 w-80 rounded-xl shadow-ambient-lg border ${
-                darkMode 
+              className={`
+                absolute right-0 mt-2 w-80 rounded-xl
+                shadow-ambient-lg border
+                ${darkMode 
                   ? 'bg-surface-dark border-secondary-800/50' 
-                  : 'bg-surface-light border-primary-100'
-              }`}
+                  : 'bg-surface-light border-primary-100'}
+                z-50
+              `}
             >
               <div className="p-4">
                 <h3 className={`font-semibold mb-3 ${
@@ -107,9 +146,11 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                   {notifications.map(notification => (
                     <div
                       key={notification.id}
-                      className={`p-3 rounded-lg ${
-                        darkMode ? 'hover:bg-secondary-800/30' : 'hover:bg-primary-50'
-                      }`}
+                      className={`
+                        p-3 rounded-lg cursor-pointer
+                        ${darkMode ? 'hover:bg-secondary-800/30' : 'hover:bg-primary-50'}
+                        transition-colors duration-200
+                      `}
                     >
                       <p className={`text-sm ${
                         darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'
@@ -128,9 +169,10 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
 
-      <div className="relative">
+      {/* User Menu */}
+      <div className="relative" ref={userMenuRef}>
         <motion.button
           variants={buttonVariants}
           whileHover="hover"
@@ -138,11 +180,16 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
           onClick={() => setShowUserMenu(!showUserMenu)}
           className="flex items-center gap-3"
         >
-          <img
-            src={user?.picture}
-            alt={user?.name}
-            className="w-10 h-10 rounded-full border-2 border-primary-500"
-          />
+          <div className="relative">
+            <img
+              src={user?.picture}
+              alt={user?.name}
+              className="w-10 h-10 rounded-full border-2 border-primary-500"
+            />
+            <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 ${
+              darkMode ? 'border-surface-dark' : 'border-surface-light'
+            }`} />
+          </div>
           <span className={`text-lg font-medium hidden md:block ${
             darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'
           }`}>
@@ -150,18 +197,21 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
           </span>
         </motion.button>
 
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {showUserMenu && (
             <motion.div
               initial="hidden"
               animate="visible"
               exit="exit"
               variants={menuVariants}
-              className={`absolute right-0 mt-2 w-64 rounded-xl shadow-ambient-lg border ${
-                darkMode 
+              className={`
+                absolute right-0 mt-2 w-64 rounded-xl
+                shadow-ambient-lg border
+                ${darkMode 
                   ? 'bg-surface-dark border-secondary-800/50' 
-                  : 'bg-surface-light border-primary-100'
-              }`}
+                  : 'bg-surface-light border-primary-100'}
+                z-50
+              `}
             >
               <div className="p-4">
                 <div className="flex items-center gap-3 mb-4">
@@ -184,52 +234,23 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <motion.button
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                    onClick={() => window.location.href = '/profile'}
-                    className={`w-full p-2 rounded-lg flex items-center gap-2 ${
-                      darkMode 
-                        ? 'hover:bg-secondary-800/30' 
-                        : 'hover:bg-primary-50'
-                    }`}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    <span>Profile</span>
-                  </motion.button>
-
-                  <motion.button
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                    onClick={() => logout({ returnTo: window.location.origin })}
-                    className={`w-full p-2 rounded-lg flex items-center gap-2 ${
-                      darkMode 
-                        ? 'hover:bg-secondary-800/30 text-red-400' 
-                        : 'hover:bg-primary-50 text-red-500'
-                    }`}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    <span>Log Out</span>
-                  </motion.button>
-                </div>
-
-                {userToken && (
-                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <p className={`text-xs ${
-                      darkMode ? 'text-text-dark-tertiary' : 'text-text-light-tertiary'
-                    }`}>
-                      Session active
-                      <span className="inline-block w-2 h-2 bg-green-500 rounded-full ml-2"></span>
-                    </p>
-                  </div>
-                )}
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={() => logout({ returnTo: window.location.origin })}
+                  className={`
+                    w-full p-2 rounded-lg
+                    flex items-center gap-2
+                    ${darkMode 
+                      ? 'hover:bg-secondary-800/30 text-red-400' 
+                      : 'hover:bg-primary-50 text-red-500'}
+                    transition-colors duration-200
+                  `}
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span>Log Out</span>
+                </motion.button>
               </div>
             </motion.div>
           )}
@@ -240,11 +261,15 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
 
   return (
     <nav 
-      className={`w-full z-50 ${
-        darkMode 
+      className={`
+        fixed top-0 left-0 right-0
+        w-full z-40
+        ${darkMode 
           ? 'bg-surface-dark border-b border-secondary-800/20' 
-          : 'bg-surface-light border-b border-primary-100'
-      } transition-all duration-300`}
+          : 'bg-surface-light border-b border-primary-100'}
+        transition-colors duration-300
+        backdrop-blur-sm
+      `}
     >
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
@@ -263,28 +288,23 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
               whileHover="hover"
               whileTap="tap"
               onClick={toggleDarkMode}
-              className={`p-2.5 rounded-lg ${
-                darkMode 
+              className={`
+                p-2.5 rounded-lg
+                ${darkMode 
                   ? 'text-text-dark-secondary hover:bg-secondary-800/50' 
-                  : 'text-text-light-secondary hover:bg-primary-50'
-              } transition-colors duration-300`}
+                  : 'text-text-light-secondary hover:bg-primary-50'}
+                transition-colors duration-200
+              `}
             >
               {darkMode ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
+                <Sun className="w-6 h-6" />
               ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
+                <Moon className="w-6 h-6" />
               )}
             </motion.button>
 
             {isLoading ? (
-              <svg className="animate-spin h-6 w-6 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
+              <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
             ) : (
               isAuthenticated ? <UserProfile /> : <LoginButton />
             )}

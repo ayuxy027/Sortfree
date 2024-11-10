@@ -13,22 +13,22 @@ const Hero = ({ darkMode }) => {
 
   const heroVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
-      transition: { 
+      transition: {
         duration: 0.8,
-        staggerChildren: 0.2 
+        staggerChildren: 0.2
       }
     }
   };
 
   const shimmerVariants = {
     initial: { x: '-100%', opacity: 0.5 },
-    animate: { 
-      x: '100%', 
+    animate: {
+      x: '100%',
       opacity: 0.8,
-      transition: { 
+      transition: {
         repeat: Infinity,
         duration: 3,
         ease: 'linear'
@@ -60,20 +60,20 @@ const Hero = ({ darkMode }) => {
         setCardWidth(width / 4 - 24);
       }
     };
-    
+
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
   return (
-    <motion.section 
+    <motion.section
       initial="hidden"
       animate="visible"
       variants={heroVariants}
-      className={`relative pt-20 pb-32 overflow-hidden
-        ${darkMode 
-          ? 'bg-gradient-to-br from-background-dark via-primary-950/20 to-primary-950/40' 
+      className={`relative pt-32 mt-16 pb-32 overflow-hidden
+        ${darkMode
+          ? 'bg-gradient-to-br from-background-dark via-primary-950/20 to-primary-950/40'
           : 'bg-gradient-to-br from-background-light via-primary-100/50 to-primary-200/30'}`}
     >
       <div className="absolute inset-0 z-0">
@@ -88,18 +88,18 @@ const Hero = ({ darkMode }) => {
           <ContentSortingLabel darkMode={darkMode} />
         </div>
 
-        <motion.div 
+        <motion.div
           variants={heroVariants}
           className="max-w-4xl mx-auto text-center"
         >
-          <motion.h1 
+          <motion.h1
             variants={heroVariants}
             className={`text-4xl sm:text-5xl md:text-6xl font-extrabold ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'}`}
           >
             Simplify Your Sorting with{' '}
             <motion.span
               initial={{ backgroundColor: 'rgba(0,0,0,0)' }}
-              animate={{ 
+              animate={{
                 backgroundColor: darkMode ? 'rgba(62,164,167,0.2)' : 'rgba(62,164,167,0.15)',
               }}
               transition={{ duration: 0.5 }}
@@ -109,14 +109,14 @@ const Hero = ({ darkMode }) => {
             </motion.span>
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             variants={heroVariants}
             className={`mt-6 text-xl ${darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'} max-w-3xl mx-auto`}
           >
             Effortlessly sort and organize web content using AI-powered custom sorting. Just paste the class or ID, add your parameters, and let SortFree.AI do the rest.
           </motion.p>
 
-          <motion.div 
+          <motion.div
             variants={heroVariants}
             className="mt-10 flex flex-col sm:flex-row justify-center gap-4"
           >
@@ -157,8 +157,8 @@ const Hero = ({ darkMode }) => {
             )}
           </motion.div>
 
-          <div ref={containerRef} className="relative h-96 max-w-5xl mx-auto mt-20">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div ref={containerRef} className="relative h-auto max-w-6xl mx-auto mt-20">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {stats.map((stat) => {
                 const Icon = stat.icon;
                 return (
@@ -170,29 +170,30 @@ const Hero = ({ darkMode }) => {
                     whileHover={{ y: -5 }}
                     transition={{ duration: 0.3 }}
                     className={`
-                      p-6 rounded-2xl
-                      ${darkMode 
-                        ? 'bg-surface-dark/90 border-secondary-800/50' 
+            p-6 rounded-2xl
+            ${darkMode
+                        ? 'bg-surface-dark/90 border-secondary-800/50'
                         : 'bg-surface-light/90 border-primary-200/50'}
-                      border-2
-                      backdrop-blur-sm
-                      transition-all duration-300
-                      hover:shadow-ambient-lg
-                    `}
+            border-2
+            backdrop-blur-sm
+            transition-all duration-300
+            hover:shadow-ambient-lg
+            w-full
+          `}
                   >
                     <div className="flex flex-col items-center gap-4">
-                      <motion.div 
+                      <motion.div
                         whileHover={{ scale: 1.1 }}
                         className={`
-                          w-12 h-12 rounded-full
-                          flex items-center justify-center
-                          ${darkMode ? 'bg-primary-700/50' : 'bg-primary-100'}
-                          backdrop-blur-sm
-                        `}
+                w-12 h-12 rounded-full
+                flex items-center justify-center
+                ${darkMode ? 'bg-primary-700/50' : 'bg-primary-100'}
+                backdrop-blur-sm
+              `}
                       >
                         <Icon className={`w-6 h-6 ${darkMode ? 'text-primary-300' : 'text-primary-600'}`} />
                       </motion.div>
-                      
+
                       <div>
                         <h3 className={`text-xl font-bold mb-1 ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'}`}>
                           {stat.value}

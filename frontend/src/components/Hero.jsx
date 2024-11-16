@@ -71,7 +71,7 @@ const Hero = ({ darkMode }) => {
       initial="hidden"
       animate="visible"
       variants={heroVariants}
-      className={`relative pt-32 mt-16 pb-32 overflow-hidden
+      className={`relative pt-24 pb-32 overflow-hidden
         ${darkMode
           ? 'bg-gradient-to-br from-background-dark via-primary-950/20 to-primary-950/40'
           : 'bg-gradient-to-br from-background-light via-primary-100/50 to-primary-200/30'}`}
@@ -83,7 +83,7 @@ const Hero = ({ darkMode }) => {
         ></div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="container relative z-10 px-4 mx-auto sm:px-6 lg:px-8">
         <div className="mb-8">
           <ContentSortingLabel darkMode={darkMode} />
         </div>
@@ -103,7 +103,7 @@ const Hero = ({ darkMode }) => {
                 backgroundColor: darkMode ? 'rgba(62,164,167,0.2)' : 'rgba(62,164,167,0.15)',
               }}
               transition={{ duration: 0.5 }}
-              className="px-2 rounded-md relative inline-block text-primary-500"
+              className="relative inline-block px-2 rounded-md text-primary-500"
             >
               SortFree.AI
             </motion.span>
@@ -113,19 +113,19 @@ const Hero = ({ darkMode }) => {
             variants={heroVariants}
             className={`mt-6 text-xl ${darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'} max-w-3xl mx-auto`}
           >
-            Effortlessly sort your web with AI. Paste, set, and let Sortfree  work its magic.
+            Effortlessly sort your web with AI. Paste, set, and let Sortfree work its magic.
           </motion.p>
 
           <motion.div
             variants={heroVariants}
-            className="mt-10 flex flex-col sm:flex-row justify-center gap-4"
+            className="flex flex-col justify-center gap-4 mt-10 sm:flex-row"
           >
             {!isAuthenticated ? (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => loginWithRedirect()}
-                className="relative px-8 py-3 rounded-md font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 transition-all duration-300 flex items-center justify-center shadow-ambient hover:shadow-ambient-lg overflow-hidden"
+                className="relative flex items-center justify-center px-8 py-3 overflow-hidden font-semibold text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-ambient hover:shadow-ambient-lg"
               >
                 <motion.div
                   variants={shimmerVariants}
@@ -133,24 +133,24 @@ const Hero = ({ darkMode }) => {
                   animate="animate"
                   className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent"
                 />
-                Get Started <ArrowRight className="ml-2 h-5 w-5" />
+                Get Started <ArrowRight className="w-5 h-5 ml-2" />
               </motion.button>
             ) : (
               <>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-3 rounded-md font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 transition-all duration-300 flex items-center justify-center shadow-ambient hover:shadow-ambient-lg"
+                  className="flex items-center justify-center px-8 py-3 font-semibold text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-ambient hover:shadow-ambient-lg"
                 >
-                  Get Started <ArrowRight className="ml-2 h-5 w-5" />
+                  Get Started <ArrowRight className="w-5 h-5 ml-2" />
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={launchConfetti}
-                  className="px-8 py-3 rounded-md font-semibold text-white bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 transition-all duration-300 flex items-center justify-center shadow-ambient hover:shadow-ambient-lg"
+                  className="flex items-center justify-center px-8 py-3 font-semibold text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 shadow-ambient hover:shadow-ambient-lg"
                 >
-                  <Download className="mr-2 h-5 w-5" />
+                  <Download className="w-5 h-5 mr-2" />
                   Download Extension
                 </motion.button>
               </>
@@ -158,7 +158,7 @@ const Hero = ({ darkMode }) => {
           </motion.div>
 
           <div ref={containerRef} className="relative h-auto max-w-6xl mx-auto mt-20">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {stats.map((stat) => {
                 const Icon = stat.icon;
                 return (
@@ -170,26 +170,26 @@ const Hero = ({ darkMode }) => {
                     whileHover={{ y: -5 }}
                     transition={{ duration: 0.3 }}
                     className={`
-            p-6 rounded-2xl
-            ${darkMode
+                      p-6 rounded-2xl
+                      ${darkMode
                         ? 'bg-surface-dark/90 border-secondary-800/50'
                         : 'bg-surface-light/90 border-primary-200/50'}
-            border-2
-            backdrop-blur-sm
-            transition-all duration-300
-            hover:shadow-ambient-lg
-            w-full
-          `}
+                      border-2
+                      backdrop-blur-sm
+                      transition-all duration-300
+                      hover:shadow-ambient-lg
+                      w-full
+                    `}
                   >
                     <div className="flex flex-col items-center gap-4">
                       <motion.div
                         whileHover={{ scale: 1.1 }}
                         className={`
-                w-12 h-12 rounded-full
-                flex items-center justify-center
-                ${darkMode ? 'bg-primary-700/50' : 'bg-primary-100'}
-                backdrop-blur-sm
-              `}
+                          w-12 h-12 rounded-full
+                          flex items-center justify-center
+                          ${darkMode ? 'bg-primary-700/50' : 'bg-primary-100'}
+                          backdrop-blur-sm
+                        `}
                       >
                         <Icon className={`w-6 h-6 ${darkMode ? 'text-primary-300' : 'text-primary-600'}`} />
                       </motion.div>

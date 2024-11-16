@@ -49,11 +49,9 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
     if (showNotifications) setShowUserMenu(false);
   }, [showNotifications]);
 
-  // Handle Auth0 errors gracefully
   useEffect(() => {
     if (error) {
       console.error('Auth0 Error:', error.message);
-      // You might want to show a toast notification here
     }
   }, [error]);
 
@@ -83,30 +81,19 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
     }
   };
 
-  const buttonVariants = {
-    hover: { scale: 1.05 },
-    tap: { scale: 0.95 }
+  const shimmerVariants = {
+    initial: { x: '-100%', opacity: 0.5 },
+    animate: {
+      x: '100%',
+      opacity: 0.8,
+      transition: {
+        repeat: Infinity,
+        duration: 3,
+        ease: 'linear'
+      }
+    }
   };
-
-  const LoginButton = () => (
-    <motion.button
-      variants={buttonVariants}
-      whileHover="hover"
-      whileTap="tap"
-      onClick={() => loginWithRedirect()}
-      className={`
-        px-6 py-2.5 text-lg font-semibold text-white rounded-lg
-        bg-gradient-to-r from-primary-500 to-primary-600 
-        hover:from-primary-600 hover:to-primary-700 
-        transition-all duration-300 shadow-ambient hover:shadow-ambient-lg
-      `}
-    >
-      Sign In
-    </motion.button>
-  );
-
   const UserProfile = () => {
-    // Ensure we have user data before rendering
     if (!user) return null;
 
     const userImage = user.picture || '/api/placeholder/40/40';
@@ -115,22 +102,24 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
 
     return (
       <div className="relative flex items-center gap-4">
-        {/* Notifications */}
         <div className="relative" ref={notificationRef}>
           <motion.button
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setShowNotifications(!showNotifications)}
             className={`
-              p-2 rounded-full relative
-              ${darkMode ? 'hover:bg-secondary-800/50' : 'hover:bg-primary-50'}
-              transition-colors duration-200
+              p-2.5 rounded-xl
+              ${darkMode 
+                ? 'bg-surface-dark/90 border-secondary-800/50' 
+                : 'bg-surface-light/90 border-primary-200/50'}
+              border backdrop-blur-sm
+              transition-all duration-300
+              hover:shadow-ambient-lg
             `}
           >
-            <Bell className={`w-6 h-6 ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'}`} />
+            <Bell className={`w-6 h-6 ${darkMode ? 'text-primary-300' : 'text-primary-600'}`} />
             {notifications.length > 0 && (
-              <span className="absolute top-0 right-0 w-2 h-2 bg-primary-500 rounded-full" />
+              <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-primary-500" />
             )}
           </motion.button>
 
@@ -143,10 +132,11 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                 variants={menuVariants}
                 className={`
                   absolute right-0 mt-2 w-80 rounded-xl
-                  shadow-ambient-lg border
                   ${darkMode 
-                    ? 'bg-surface-dark border-secondary-800/50' 
-                    : 'bg-surface-light border-primary-100'}
+                    ? 'bg-surface-dark/90 border-secondary-800/50' 
+                    : 'bg-surface-light/90 border-primary-200/50'}
+                  border backdrop-blur-sm
+                  shadow-ambient-lg
                   z-50
                 `}
               >
@@ -158,12 +148,15 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                   </h3>
                   <div className="space-y-3">
                     {notifications.map(notification => (
-                      <div
+                      <motion.div
                         key={notification.id}
+                        whileHover={{ scale: 1.02 }}
                         className={`
                           p-3 rounded-lg cursor-pointer
-                          ${darkMode ? 'hover:bg-secondary-800/30' : 'hover:bg-primary-50'}
-                          transition-colors duration-200
+                          ${darkMode 
+                            ? 'hover:bg-secondary-800/30' 
+                            : 'hover:bg-primary-50'}
+                          transition-all duration-300
                         `}
                       >
                         <p className={`text-sm ${
@@ -176,7 +169,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                         }`}>
                           {notification.time}
                         </p>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 </div>
@@ -185,29 +178,36 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
           </AnimatePresence>
         </div>
 
-        {/* User Menu */}
         <div className="relative" ref={userMenuRef}>
           <motion.button
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setShowUserMenu(!showUserMenu)}
-            className="flex items-center gap-3"
+            className={`
+              p-2 rounded-xl
+              ${darkMode 
+                ? 'bg-surface-dark/90 border-secondary-800/50' 
+                : 'bg-surface-light/90 border-primary-200/50'}
+              border backdrop-blur-sm
+              transition-all duration-300
+              hover:shadow-ambient-lg
+              flex items-center gap-3
+            `}
           >
             <div className="relative">
-              <div className="w-10 h-10 rounded-full border-2 border-primary-500 overflow-hidden">
+              <div className="w-10 h-10 overflow-hidden border-2 rounded-full border-primary-500">
                 {userImage ? (
                   <img
                     src={userImage}
                     alt={userName}
-                    className="w-full h-full object-cover"
+                    className="object-cover w-full h-full"
                     onError={(e) => {
                       e.target.src = '/api/placeholder/40/40';
                       e.target.onerror = null;
                     }}
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-primary-100">
+                  <div className="flex items-center justify-center w-full h-full bg-primary-100">
                     <User className="w-6 h-6 text-primary-500" />
                   </div>
                 )}
@@ -232,28 +232,29 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                 variants={menuVariants}
                 className={`
                   absolute right-0 mt-2 w-64 rounded-xl
-                  shadow-ambient-lg border
                   ${darkMode 
-                    ? 'bg-surface-dark border-secondary-800/50' 
-                    : 'bg-surface-light border-primary-100'}
+                    ? 'bg-surface-dark/90 border-secondary-800/50' 
+                    : 'bg-surface-light/90 border-primary-200/50'}
+                  border backdrop-blur-sm
+                  shadow-ambient-lg
                   z-50
                 `}
               >
                 <div className="p-4">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full overflow-hidden">
+                    <div className="w-12 h-12 overflow-hidden border-2 rounded-full border-primary-500">
                       {userImage ? (
                         <img
                           src={userImage}
                           alt={userName}
-                          className="w-full h-full object-cover"
+                          className="object-cover w-full h-full"
                           onError={(e) => {
                             e.target.src = '/api/placeholder/48/48';
                             e.target.onerror = null;
                           }}
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-primary-100">
+                        <div className="flex items-center justify-center w-full h-full bg-primary-100">
                           <User className="w-8 h-8 text-primary-500" />
                         </div>
                       )}
@@ -273,15 +274,13 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                   </div>
 
                   <motion.button
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => {
                       try {
                         logout({ returnTo: window.location.origin });
                       } catch (error) {
                         console.error('Logout error:', error);
-                        // Handle logout error gracefully
                       }
                     }}
                     className={`
@@ -290,7 +289,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                       ${darkMode 
                         ? 'hover:bg-secondary-800/30 text-red-400' 
                         : 'hover:bg-primary-50 text-red-500'}
-                      transition-colors duration-200
+                      transition-all duration-300
                     `}
                   >
                     <LogOut className="w-5 h-5" />
@@ -306,59 +305,86 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
   };
 
   return (
-    <nav 
-      className={`
-        fixed top-0 left-0 right-0
-        w-full z-40
+    <>
+      {/* Spacer div to prevent content jump */}
+      <div className="w-full h-20" />
+
+      {/* Fixed Navbar */}
+      <nav className={`
+        fixed top-0 left-0 right-0 w-full z-40
         ${darkMode 
-          ? 'bg-surface-dark border-b border-secondary-800/20' 
-          : 'bg-surface-light border-b border-primary-100'}
+          ? 'bg-gradient-to-br from-background-dark via-primary-950/20 to-primary-950/40 border-secondary-800/10' 
+          : 'bg-gradient-to-br from-background-light via-primary-100/50 to-primary-200/30 border-primary-200/20'}
+        border-b backdrop-blur-sm
         transition-colors duration-300
-        backdrop-blur-sm
-      `}
-    >
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <motion.a
-            href="/"
-            variants={buttonVariants}
-            whileHover="hover"
-            className="text-3xl font-bold bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text text-transparent"
-          >
-            SortFree.AI
-          </motion.a>
+      `}>
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-radial from-primary-500/10 to-transparent"></div>
+          <div className={`absolute inset-0 opacity-35 
+            ${darkMode ? 'bg-[url("/noise-dark.png")]' : 'bg-[url("/noise-light.png")]'}`}
+          ></div>
+        </div>
 
-          <div className="flex items-center gap-4">
-            <motion.button
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
-              onClick={toggleDarkMode}
-              className={`
-                p-2.5 rounded-lg
-                ${darkMode 
-                  ? 'text-text-dark-secondary hover:bg-secondary-800/50' 
-                  : 'text-text-light-secondary hover:bg-primary-50'}
-                transition-colors duration-200
-              `}
+        <div className="relative z-10 w-full px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <motion.a
+              href="/"
+              whileHover={{ scale: 1.05 }}
+              className="relative text-3xl font-bold"
             >
-              {darkMode ? (
-                <Sun className="w-6 h-6" />
-              ) : (
-                <Moon className="w-6 h-6" />
-              )}
-            </motion.button>
+              <span className="text-transparent bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text">
+                SortFree
+              </span>
+            </motion.a>
 
-            {isLoading ? (
-              <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
-            ) : error ? (
-              <div className="text-red-500">Authentication Error</div>
-            ) : (
-              isAuthenticated ? <UserProfile /> : <LoginButton />
-            )}
+            <div className="flex items-center gap-4">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleDarkMode}
+                className={`
+                  p-2.5 rounded-xl
+                  ${darkMode 
+                    ? 'bg-surface-dark/90 border-secondary-800/50' 
+                    : 'bg-surface-light/90 border-primary-200/50'}
+                  border backdrop-blur-sm
+                  transition-all duration-300
+                  hover:shadow-ambient-lg
+                `}
+              >
+                {darkMode ? (
+                  <Sun className={`w-6 h-6 ${darkMode ? 'text-primary-300' : 'text-primary-600'}`} />
+                ) : (
+                  <Moon className={`w-6 h-6 ${darkMode ? 'text-primary-300' : 'text-primary-600'}`} />
+                )}
+              </motion.button>
+
+              {isLoading ? (
+                <div className="w-6 h-6 border-2 rounded-full border-primary-500 border-t-transparent animate-spin" />
+              ) : error ? (
+                <div className="text-red-500">Authentication Error</div>
+              ) : !isAuthenticated ? (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => loginWithRedirect()}
+                  className="relative flex items-center justify-center px-8 py-3 overflow-hidden font-semibold text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-ambient hover:shadow-ambient-lg"
+                >
+                  <motion.div
+                    variants={shimmerVariants}
+                    initial="initial"
+                    animate="animate"
+                    className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                  />
+                  Sign In
+                </motion.button>
+              ) : (
+                <UserProfile />
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 }

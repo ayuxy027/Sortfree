@@ -1,22 +1,67 @@
-# Sortfree
-Sort Smarter, Not Harder – AI-Driven Data Filtering for Every Web Page.
+# SortFree
+Welcome to **SortFree**! 🚀
 
-Introducing an AI-powered web extension that taps into the Gemini API to intelligently filter and sort webpage content based on ideas rather than keywords. By analyzing and understanding the underlying concepts of the HTML body, it renders a more organized and contextually relevant layout.
+## Project Overview
+**SortFree.AI** is an intelligent web extension developed during **Hack This Fall 2024 Virtual**, revolutionizing data filtering with AI-powered smart sorting. 
 
-### The problem SortFree.AI solves
-1. **Efficient Data Management**: SortFree.AI quickly organizes large datasets by criteria like price, ratings, or custom parameters, helping users focus on what matters.
-2. **Time and Accuracy**: Automating sorting and filtering saves time, reduces errors, and delivers consistent, accurate results.
-3. **Versatile Use Cases**: SortFree.AI is customizable for industries like e-commerce, real estate, and job boards, offering tailored filtering solutions.
+Sort Smarter, Not Harder 😉
 
-### Technology Used
-1. Gemini API
-2. Auth0
-3. React JS
-4. Vercel
-5. Github Copilot
+## Tech Stack
+- **Vite**
+- **Gemini 1.5 Pro**
+- **Auth0 By Okta**
+- **Vercel CLI**
+- **Supermaven PRO**
 
-Open for ideas and thoughts ⭐
+## Features
+- **AI-Driven Content Filtering** 🤖
+- **Intelligent Sorting Algorithms** 📑
+- **Customizable Filtering Parameters** ⚙️
+- **Versatile Industry Applications** 🌐
+- **Efficient Data Management** 📈
+- **Time-Saving Automation** ⏱️
+- **Error Reduction** 🛡️
 
+## USPs
+1. **Efficient Data Management**: Quickly organize large datasets by various criteria
+2. **Enhanced Accuracy**: Automate sorting to reduce human errors
+3. **Versatile Solutions**: Customizable filtering for multiple industries
+   - E-commerce
+   - Real Estate
+   - Job Boards
+   - And More!
+
+## Setup and Installation
+1. **Clone** this repository:
+   ```bash
+   git clone https://github.com/ayuxy027/SortFree.git
+   ```
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+3. **Create a `.env` file** and add the necessary API keys.
+
+## Contributing
+**Contributions are welcomed** 😁
+Let's innovate and make data sorting smarter!
+
+### Hey There!
+Thanks for checking out SortFree!
+Just a few things to keep in mind:
+- Please don't **copy**, **share**, or **redistribute** this project without consent.
+- Creating something from scratch takes a lot of hard work, and I hope you respect that 😄
+- If you have any questions or need permission, feel free to reach out.
+
+## Contact
+If you have any enquiries or suggestions, please reach out:
+- Email: [ayush421301@gmail.com](mailto:ayush421301@gmail.com)
+- X (Twitter): [ayuxy027](https://x.com/ayuxy027)
+- GitHub: [ayuxy027](https://github.com/ayuxy027)
+
+---
+
+## Project Screenshots
 ![image](https://github.com/user-attachments/assets/4bec0cac-48d7-45ee-aafd-15837dba6696)
 -
 ![image](https://github.com/user-attachments/assets/9bff7e0c-bcc5-4a49-9596-5af950d58699)

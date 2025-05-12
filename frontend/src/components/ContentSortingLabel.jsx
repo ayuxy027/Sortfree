@@ -93,7 +93,7 @@ const ContentSortingLabel = ({ darkMode = false }) => {
             ${theme.background}
             backdrop-blur-sm
             flex items-center gap-2
-            font-medium
+            font-normal tracking-wide
             ${theme.text}
             shadow-lg ${theme.shadow}
             hover:bg-gradient-to-r hover:from-primary-400/15 hover:to-primary-300/15

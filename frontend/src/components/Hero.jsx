@@ -52,6 +52,20 @@ const Hero = ({ darkMode }) => {
     });
   };
 
+  const handleLogin = async () => {
+    try {
+      await loginWithRedirect({
+        authorizationParams: {
+          redirect_uri: window.location.origin,
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          scope: 'openid profile email read:data write:data'
+        }
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+    }
+  };
+
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
@@ -94,7 +108,7 @@ const Hero = ({ darkMode }) => {
         >
           <motion.h1
             variants={heroVariants}
-            className={`text-4xl sm:text-5xl md:text-6xl font-extrabold ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'}`}
+            className={`text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'}`}
           >
             Simplify Your Sorting with{' '}
             <motion.span
@@ -111,7 +125,7 @@ const Hero = ({ darkMode }) => {
 
           <motion.p
             variants={heroVariants}
-            className={`mt-6 text-xl ${darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'} max-w-3xl mx-auto`}
+            className={`mt-6 text-xl font-light leading-relaxed ${darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'} max-w-3xl mx-auto`}
           >
             Effortlessly sort your web with AI. Paste, set, and let Sortfree work its magic.
           </motion.p>
@@ -124,8 +138,8 @@ const Hero = ({ darkMode }) => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => loginWithRedirect()}
-                className="relative flex items-center justify-center px-8 py-3 overflow-hidden font-semibold text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-ambient hover:shadow-ambient-lg"
+                onClick={handleLogin}
+                className="relative flex items-center justify-center px-8 py-3 overflow-hidden font-normal text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-ambient hover:shadow-ambient-lg"
               >
                 <motion.div
                   variants={shimmerVariants}
@@ -140,7 +154,7 @@ const Hero = ({ darkMode }) => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center justify-center px-8 py-3 font-semibold text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-ambient hover:shadow-ambient-lg"
+                  className="flex items-center justify-center px-8 py-3 font-normal text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-ambient hover:shadow-ambient-lg"
                 >
                   Get Started <ArrowRight className="w-5 h-5 ml-2" />
                 </motion.button>
@@ -148,7 +162,7 @@ const Hero = ({ darkMode }) => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={launchConfetti}
-                  className="flex items-center justify-center px-8 py-3 font-semibold text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 shadow-ambient hover:shadow-ambient-lg"
+                  className="flex items-center justify-center px-8 py-3 font-normal text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 shadow-ambient hover:shadow-ambient-lg"
                 >
                   <Download className="w-5 h-5 mr-2" />
                   Download Extension
@@ -195,10 +209,10 @@ const Hero = ({ darkMode }) => {
                       </motion.div>
 
                       <div>
-                        <h3 className={`text-xl font-bold mb-1 ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'}`}>
+                        <h3 className={`text-xl font-normal mb-1 ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'}`}>
                           {stat.value}
                         </h3>
-                        <p className={`text-sm ${darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'}`}>
+                        <p className={`text-sm font-light ${darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'}`}>
                           {stat.label}
                         </p>
                       </div>

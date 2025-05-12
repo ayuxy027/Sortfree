@@ -52,11 +52,26 @@ function App() {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
+  // Function to handle Auth0 redirect callback
+  const onRedirectCallback = (appState) => {
+    window.history.replaceState(
+      {},
+      document.title,
+      appState?.returnTo || window.location.pathname
+    );
+  };
+
   return (
     <Auth0Provider
       domain={import.meta.env.VITE_AUTH0_DOMAIN}
       clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-      redirectUri={window.location.origin}
+      authorizationParams={{
+        redirect_uri: window.location.origin,
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        scope: 'openid profile email read:data write:data'
+      }}
+      onRedirectCallback={onRedirectCallback}
+      cacheLocation="localstorage"
     >
       <Router>
         <div className={`App min-h-screen transition-colors duration-300 ${

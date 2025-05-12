@@ -17,6 +17,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
 
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [loginError, setLoginError] = useState(null);
   
   const userMenuRef = useRef(null);
   const notificationRef = useRef(null);
@@ -52,8 +53,38 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
   useEffect(() => {
     if (error) {
       console.error('Auth0 Error:', error.message);
+      setLoginError(error.message);
+    } else {
+      setLoginError(null);
     }
   }, [error]);
+
+  const handleLogin = async () => {
+    try {
+      await loginWithRedirect({
+        authorizationParams: {
+          redirect_uri: window.location.origin,
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          scope: 'openid profile email read:data write:data'
+        }
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      setLoginError(error.message);
+    }
+  };
+
+  const handleLogout = () => {
+    try {
+      logout({ 
+        logoutParams: {
+          returnTo: window.location.origin
+        }
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   const menuVariants = {
     hidden: { 
@@ -216,7 +247,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                 darkMode ? 'border-surface-dark' : 'border-surface-light'
               }`} />
             </div>
-            <span className={`text-lg font-medium hidden md:block ${
+            <span className={`text-lg font-normal hidden md:block ${
               darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'
             }`}>
               {userName}
@@ -260,7 +291,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                       )}
                     </div>
                     <div>
-                      <p className={`font-medium ${
+                      <p className={`font-normal ${
                         darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'
                       }`}>
                         {userName}
@@ -276,13 +307,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      try {
-                        logout({ returnTo: window.location.origin });
-                      } catch (error) {
-                        console.error('Logout error:', error);
-                      }
-                    }}
+                    onClick={handleLogout}
                     className={`
                       w-full p-2 rounded-lg
                       flex items-center gap-2
@@ -293,7 +318,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                     `}
                   >
                     <LogOut className="w-5 h-5" />
-                    <span>Log Out</span>
+                    <span className="font-normal">Log Out</span>
                   </motion.button>
                 </div>
               </motion.div>
@@ -330,7 +355,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
             <motion.a
               href="/"
               whileHover={{ scale: 1.05 }}
-              className="relative text-3xl font-bold"
+              className="relative text-3xl font-normal"
             >
               <span className="text-transparent bg-gradient-to-r from-primary-500 to-primary-600 bg-clip-text">
                 SortFree
@@ -361,14 +386,14 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
 
               {isLoading ? (
                 <div className="w-6 h-6 border-2 rounded-full border-primary-500 border-t-transparent animate-spin" />
-              ) : error ? (
-                <div className="text-red-500">Authentication Error</div>
+              ) : loginError ? (
+                <div className="text-red-500 text-sm">Auth Error - Try Again</div>
               ) : !isAuthenticated ? (
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => loginWithRedirect()}
-                  className="relative flex items-center justify-center px-8 py-3 overflow-hidden font-semibold text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-ambient hover:shadow-ambient-lg"
+                  onClick={handleLogin}
+                  className="relative flex items-center justify-center px-8 py-3 overflow-hidden font-normal text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-ambient hover:shadow-ambient-lg"
                 >
                   <motion.div
                     variants={shimmerVariants}

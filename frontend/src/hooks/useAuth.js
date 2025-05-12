@@ -1,24 +1,69 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 export const useAuth = () => {
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { 
+    isAuthenticated,
+    getAccessTokenSilently,
+    logout,
+    loginWithRedirect,
+    user,
+    isLoading,
+    error
+  } = useAuth0();
+  
   const [token, setToken] = useState(null);
+  const [tokenError, setTokenError] = useState(null);
+
+  const getToken = useCallback(async () => {
+    if (!isAuthenticated) return null;
+    
+    try {
+      setTokenError(null);
+      const accessToken = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          scope: 'openid profile email read:data write:data'
+        }
+      });
+      setToken(accessToken);
+      return accessToken;
+    } catch (e) {
+      console.error('Error getting access token:', e);
+      setTokenError(e);
+      
+      // If the error is related to login_required, attempt to refresh silently
+      if (e.error === 'login_required' || e.error === 'consent_required') {
+        try {
+          await loginWithRedirect({
+            authorizationParams: {
+              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+              scope: 'openid profile email read:data write:data'
+            }
+          });
+        } catch (redirectError) {
+          console.error('Failed to redirect for authentication:', redirectError);
+        }
+      }
+      return null;
+    }
+  }, [isAuthenticated, getAccessTokenSilently, loginWithRedirect]);
 
   useEffect(() => {
-    const getToken = async () => {
-      try {
-        const accessToken = await getAccessTokenSilently();
-        setToken(accessToken);
-      } catch (e) {
-        console.error('Error getting access token:', e);
-      }
-    };
-
-    if (isAuthenticated) {
+    if (isAuthenticated && !token) {
       getToken();
     }
-  }, [isAuthenticated, getAccessTokenSilently]);
+  }, [isAuthenticated, token, getToken]);
 
-  return { isAuthenticated, token };
+  return { 
+    isAuthenticated, 
+    token, 
+    tokenError,
+    getToken,
+    user,
+    isLoading,
+    error,
+    logout,
+    loginWithRedirect
+  };
 };

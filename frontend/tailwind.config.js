@@ -13,12 +13,12 @@ module.exports = {
           200: '#bce7e8',
           300: '#8fd6d8',
           400: '#5cbec1',
-          500: '#3ea4a7',
-          600: '#358589',
-          700: '#2f6c70',
-          800: '#2b595c',
-          900: '#274b4e',
-          950: '#143133',
+          500: '#3ba4a7',
+          600: '#308589',
+          700: '#296c6f',
+          800: '#25595c',
+          900: '#204b4d',
+          950: '#0c2f30',
         },
         secondary: {
           50: '#f6f7f9',
@@ -31,7 +31,7 @@ module.exports = {
           700: '#49596f',
           800: '#3f4b5d',
           900: '#37414f',
-          950: '#252b35',
+          950: '#222b35',
         },
         ambient: {
           50: '#f4f6f8',
@@ -44,31 +44,50 @@ module.exports = {
           700: '#4d5c71',
           800: '#434f60',
           900: '#3b4452',
-          950: '#272c35',
+          950: '#242c35',
         },
         background: {
-          light: '#f8fafc',  // Softer white
-          dark: '#1a1f2a',   // Warmer dark
+          light: '#f9fafc',  // Even softer white
+          dark: '#171b24',   // Richer dark
         },
         surface: {
           light: '#ffffff',
-          dark: '#212836',
+          dark: '#1e2432',
         },
         text: {
           light: {
-            primary: '#334155',    // Softer than pure black
-            secondary: '#64748b',   // Muted text
-            tertiary: '#94a3b8',   // Even more muted
+            primary: '#313e51',    // Richer than before
+            secondary: '#5e7088',   // Improved contrast
+            tertiary: '#8b9cb3',   // Better tertiary
           },
           dark: {
-            primary: '#e2e8f0',    // Not pure white
-            secondary: '#94a3b8',   // Muted light
-            tertiary: '#64748b',    // More muted light
+            primary: '#e6ecf4',    // Slightly warmer
+            secondary: '#9aabc2',   // Better mid-tone
+            tertiary: '#6c8099',    // Improved low-contrast
           },
         },
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Inter var', 'Inter', 'system-ui', 'sans-serif'],
+      },
+      fontSize: {
+        'xs': ['0.75rem', { lineHeight: '1rem' }],
+        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'base': ['1rem', { lineHeight: '1.5rem' }],
+        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+        '2xl': ['1.5rem', { lineHeight: '2rem' }],
+        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+        '4xl': ['2.25rem', { lineHeight: '2.5rem', letterSpacing: '-0.02em' }],
+        '5xl': ['3rem', { lineHeight: '1.05', letterSpacing: '-0.03em' }],
+        '6xl': ['3.75rem', { lineHeight: '1.05', letterSpacing: '-0.04em' }],
+      },
+      fontWeight: {
+        light: '300',
+        normal: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
       },
       opacity: {
         '15': '0.15',
@@ -80,9 +99,9 @@ module.exports = {
       },
       boxShadow: {
         'ambient-sm': '0px 2px 8px -2px rgba(0, 0, 0, 0.05)',
-        'ambient': '0px 4px 16px -4px rgba(0, 0, 0, 0.1)',
-        'ambient-lg': '0px 8px 24px -6px rgba(0, 0, 0, 0.12)',
-        'ambient-dark': '0px 4px 16px -4px rgba(0, 0, 0, 0.2)',
+        'ambient': '0px 4px 16px -4px rgba(0, 0, 0, 0.08)',
+        'ambient-lg': '0px 8px 24px -6px rgba(0, 0, 0, 0.1)',
+        'ambient-dark': '0px 4px 16px -4px rgba(0, 0, 0, 0.15)',
       },
       backgroundImage: {
         'noise-light': "url('/noise-light.png')",

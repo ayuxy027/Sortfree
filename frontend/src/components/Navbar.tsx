@@ -2,38 +2,49 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, Sun, Moon, LogOut, User } from 'lucide-react';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { Bell, Sun, Moon, LogOut, User as UserIcon } from 'lucide-react';
 
-export default function Navbar({ darkMode, toggleDarkMode }) {
-  const { 
-    isAuthenticated, 
-    user, 
-    loginWithRedirect, 
-    logout, 
+interface NavbarProps {
+  darkMode: boolean;
+  toggleDarkMode: () => void;
+}
+
+interface Notification {
+  id: number;
+  text: string;
+  time: string;
+}
+
+export default function Navbar({ darkMode, toggleDarkMode }: NavbarProps) {
+  const {
+    isAuthenticated,
+    user,
+    loginWithRedirect,
+    logout,
     isLoading,
     error
   } = useAuth0();
 
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [loginError, setLoginError] = useState(null);
-  
-  const userMenuRef = useRef(null);
-  const notificationRef = useRef(null);
-  
-  const notifications = [
+  const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
+  const [showNotifications, setShowNotifications] = useState<boolean>(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
+
+  const notifications: Notification[] = [
     { id: 1, text: "Welcome back! 👋", time: "just now" },
     { id: 2, text: "Your last login was from a new device", time: "2h ago" },
     { id: 3, text: "Check out new AI features!", time: "1d ago" },
   ];
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setShowUserMenu(false);
       }
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
         setShowNotifications(false);
       }
     }
@@ -59,7 +70,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
     }
   }, [error]);
 
-  const handleLogin = async () => {
+  const handleLogin = async (): Promise<void> => {
     try {
       await loginWithRedirect({
         authorizationParams: {
@@ -70,13 +81,13 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
       });
     } catch (error) {
       console.error('Login error:', error);
-      setLoginError(error.message);
+      setLoginError((error as Error).message);
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     try {
-      logout({ 
+      logout({
         logoutParams: {
           returnTo: window.location.origin
         }
@@ -86,13 +97,13 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
     }
   };
 
-  const menuVariants = {
-    hidden: { 
+  const menuVariants: Variants = {
+    hidden: {
       opacity: 0,
       y: -20,
       scale: 0.95
     },
-    visible: { 
+    visible: {
       opacity: 1,
       y: 0,
       scale: 1,
@@ -102,7 +113,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
         damping: 30
       }
     },
-    exit: { 
+    exit: {
       opacity: 0,
       y: -20,
       scale: 0.95,
@@ -112,7 +123,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
     }
   };
 
-  const shimmerVariants = {
+  const shimmerVariants: Variants = {
     initial: { x: '-100%', opacity: 0.5 },
     animate: {
       x: '100%',
@@ -124,7 +135,8 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
       }
     }
   };
-  const UserProfile = () => {
+
+  const UserProfile: React.FC = () => {
     if (!user) return null;
 
     const userImage = user.picture || '/api/placeholder/40/40';
@@ -132,7 +144,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
     const userEmail = user.email || '';
 
     return (
-      <div className="flex relative gap-4 items-center">
+      <div className="relative flex items-center gap-4">
         <div className="relative" ref={notificationRef}>
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -140,8 +152,8 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
             onClick={() => setShowNotifications(!showNotifications)}
             className={`
               p-2.5 rounded-xl
-              ${darkMode 
-                ? 'bg-surface-dark/90 border-secondary-800/50' 
+              ${darkMode
+                ? 'bg-surface-dark/90 border-secondary-800/50'
                 : 'bg-surface-light/90 border-primary-200/50'}
               border backdrop-blur-sm
               transition-all duration-300
@@ -163,8 +175,8 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                 variants={menuVariants}
                 className={`
                   absolute right-0 mt-2 w-80 rounded-xl
-                  ${darkMode 
-                    ? 'bg-surface-dark/90 border-secondary-800/50' 
+                  ${darkMode
+                    ? 'bg-surface-dark/90 border-secondary-800/50'
                     : 'bg-surface-light/90 border-primary-200/50'}
                   border backdrop-blur-sm
                   shadow-ambient-lg
@@ -172,9 +184,8 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                 `}
               >
                 <div className="p-4">
-                  <h3 className={`font-semibold mb-3 ${
-                    darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'
-                  }`}>
+                  <h3 className={`font-semibold mb-3 ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'
+                    }`}>
                     Notifications
                   </h3>
                   <div className="space-y-3">
@@ -184,20 +195,18 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                         whileHover={{ scale: 1.02 }}
                         className={`
                           p-3 rounded-lg cursor-pointer
-                          ${darkMode 
-                            ? 'hover:bg-secondary-800/30' 
+                          ${darkMode
+                            ? 'hover:bg-secondary-800/30'
                             : 'hover:bg-primary-50'}
                           transition-all duration-300
                         `}
                       >
-                        <p className={`text-sm ${
-                          darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'
-                        }`}>
+                        <p className={`text-sm ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'
+                          }`}>
                           {notification.text}
                         </p>
-                        <p className={`text-xs mt-1 ${
-                          darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'
-                        }`}>
+                        <p className={`text-xs mt-1 ${darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'
+                          }`}>
                           {notification.time}
                         </p>
                       </motion.div>
@@ -216,8 +225,8 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
             onClick={() => setShowUserMenu(!showUserMenu)}
             className={`
               p-2 rounded-xl
-              ${darkMode 
-                ? 'bg-surface-dark/90 border-secondary-800/50' 
+              ${darkMode
+                ? 'bg-surface-dark/90 border-secondary-800/50'
                 : 'bg-surface-light/90 border-primary-200/50'}
               border backdrop-blur-sm
               transition-all duration-300
@@ -232,24 +241,23 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                     src={userImage}
                     alt={userName}
                     className="object-cover w-full h-full"
-                    onError={(e) => {
-                      e.target.src = '/api/placeholder/40/40';
-                      e.target.onerror = null;
+                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = '/api/placeholder/40/40';
+                      target.onerror = null;
                     }}
                   />
                 ) : (
                   <div className="flex justify-center items-center w-full h-full bg-primary-100">
-                    <User className="w-6 h-6 text-primary-500" />
+                    <UserIcon className="w-6 h-6 text-primary-500" />
                   </div>
                 )}
               </div>
-              <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 ${
-                darkMode ? 'border-surface-dark' : 'border-surface-light'
-              }`} />
+              <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 ${darkMode ? 'border-surface-dark' : 'border-surface-light'
+                }`} />
             </div>
-            <span className={`text-lg font-normal hidden md:block ${
-              darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'
-            }`}>
+            <span className={`text-lg font-normal hidden md:block ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'
+              }`}>
               {userName}
             </span>
           </motion.button>
@@ -263,8 +271,8 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                 variants={menuVariants}
                 className={`
                   absolute right-0 mt-2 w-64 rounded-xl
-                  ${darkMode 
-                    ? 'bg-surface-dark/90 border-secondary-800/50' 
+                  ${darkMode
+                    ? 'bg-surface-dark/90 border-secondary-800/50'
                     : 'bg-surface-light/90 border-primary-200/50'}
                   border backdrop-blur-sm
                   shadow-ambient-lg
@@ -279,26 +287,25 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                           src={userImage}
                           alt={userName}
                           className="object-cover w-full h-full"
-                          onError={(e) => {
-                            e.target.src = '/api/placeholder/48/48';
-                            e.target.onerror = null;
+                          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/api/placeholder/48/48';
+                            target.onerror = null;
                           }}
                         />
                       ) : (
                         <div className="flex justify-center items-center w-full h-full bg-primary-100">
-                          <User className="w-8 h-8 text-primary-500" />
+                          <UserIcon className="w-8 h-8 text-primary-500" />
                         </div>
                       )}
                     </div>
                     <div>
-                      <p className={`font-normal ${
-                        darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'
-                      }`}>
+                      <p className={`font-normal ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'
+                        }`}>
                         {userName}
                       </p>
-                      <p className={`text-sm ${
-                        darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'
-                      }`}>
+                      <p className={`text-sm ${darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'
+                        }`}>
                         {userEmail}
                       </p>
                     </div>
@@ -311,8 +318,8 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                     className={`
                       w-full p-2 rounded-lg
                       flex items-center gap-2
-                      ${darkMode 
-                        ? 'text-red-400 hover:bg-secondary-800/30' 
+                      ${darkMode
+                        ? 'text-red-400 hover:bg-secondary-800/30'
                         : 'text-red-500 hover:bg-primary-50'}
                       transition-all duration-300
                     `}
@@ -337,8 +344,8 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
       {/* Fixed Navbar */}
       <nav className={`
         fixed top-0 left-0 right-0 w-full z-40
-        ${darkMode 
-          ? 'bg-gradient-to-br from-background-dark via-primary-950/20 to-primary-950/40 border-secondary-800/10' 
+        ${darkMode
+          ? 'bg-gradient-to-br from-background-dark via-primary-950/20 to-primary-950/40 border-secondary-800/10'
           : 'bg-gradient-to-br from-background-light via-primary-100/50 to-primary-200/30 border-primary-200/20'}
         border-b backdrop-blur-sm
         transition-colors duration-300
@@ -369,8 +376,8 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                 onClick={toggleDarkMode}
                 className={`
                   p-2.5 rounded-xl
-                  ${darkMode 
-                    ? 'bg-surface-dark/90 border-secondary-800/50' 
+                  ${darkMode
+                    ? 'bg-surface-dark/90 border-secondary-800/50'
                     : 'bg-surface-light/90 border-primary-200/50'}
                   border backdrop-blur-sm
                   transition-all duration-300

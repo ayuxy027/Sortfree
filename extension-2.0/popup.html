@@ -5,151 +5,155 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SortFree</title>
     <style>
-      :root {
-        --primary: #2563eb;
-        --primary-hover: #1d4ed8;
-        --text: #1e293b;
-        --error: #dc2626;
-        --success: #059669;
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
 
       body {
-        width: 320px;
-        padding: 0.5rem;
-        font-family: system-ui, -apple-system, sans-serif;
-        background: transparent;
-        margin: 0;
+        width: 380px;
+        min-height: 500px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #333;
+        display: flex;
+        flex-direction: column;
       }
 
       .container {
-        background: rgba(255, 255, 255, 0.92);
-        padding: 1rem;
-        border-radius: 0.875rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08),
-          0 0 0 1px rgba(0, 0, 0, 0.03);
-        backdrop-filter: blur(8px);
+        padding: 24px;
+        background: white;
+        margin: 12px;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        flex: 1;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 24px;
       }
 
       .logo {
-        display: flex;
-        align-items: center;
-        gap: 0.375rem;
-        margin-bottom: 0.875rem;
+        font-size: 24px;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
       }
 
-      .logo svg {
-        width: 20px;
-        height: 20px;
-        color: var(--primary);
+      .subtitle {
+        color: #666;
+        font-size: 14px;
       }
 
-      h1 {
-        margin: 0;
-        font-size: 1.125rem;
-        color: var(--text);
-        font-weight: 600;
-      }
-
-      .input-group {
-        margin-bottom: 0.875rem;
+      .form-group {
+        margin-bottom: 20px;
       }
 
       label {
         display: block;
-        margin-bottom: 0.375rem;
-        font-size: 0.813rem;
-        color: #475569;
+        margin-bottom: 8px;
         font-weight: 500;
+        color: #333;
       }
 
       textarea {
         width: 100%;
-        padding: 0.625rem;
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        border-radius: 0.625rem;
-        font-size: 0.813rem;
-        margin-bottom: 0.375rem;
-        box-sizing: border-box;
-        resize: vertical;
-        min-height: 70px;
+        min-height: 120px;
+        padding: 12px;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 14px;
         font-family: inherit;
-        transition: all 0.2s;
-        background: rgba(255, 255, 255, 0.8);
+        resize: vertical;
+        transition: border-color 0.3s ease;
       }
 
       textarea:focus {
         outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
-        background: rgba(255, 255, 255, 0.95);
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
       }
 
       .suggestions {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        margin-bottom: 0.875rem;
+        margin-bottom: 20px;
+      }
+
+      .suggestions-title {
+        font-size: 12px;
+        font-weight: 500;
+        color: #666;
+        margin-bottom: 8px;
+      }
+
+      .suggestion-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
       }
 
       .suggestion {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-        background: rgba(37, 99, 235, 0.1);
-        color: var(--primary);
-        border-radius: 1rem;
+        padding: 8px 12px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.2s ease;
+        font-size: 12px;
+        text-align: center;
       }
 
       .suggestion:hover {
-        background: rgba(37, 99, 235, 0.2);
-      }
-
-      button {
-        width: 100%;
-        padding: 0.625rem;
-        background: var(--primary);
-        color: white;
-        border: none;
-        border-radius: 0.625rem;
-        font-weight: 600;
-        font-size: 0.813rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.375rem;
-      }
-
-      button:hover:not(:disabled) {
-        background: var(--primary-hover);
+        background: #e9ecef;
+        border-color: #667eea;
         transform: translateY(-1px);
       }
 
-      button:disabled {
-        background: rgba(147, 197, 253, 0.9);
+      .btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn:disabled {
+        opacity: 0.7;
         cursor: not-allowed;
         transform: none;
       }
 
-      .message {
-        font-size: 0.75rem;
-        margin-top: 0.625rem;
-        padding: 0.625rem;
-        border-radius: 0.625rem;
-        display: none;
-        backdrop-filter: blur(8px);
+      .btn.processing {
+        background: #6c757d;
       }
 
-      .error {
-        color: var(--error);
-        background: rgba(254, 226, 226, 0.9);
-      }
-
-      .success {
-        color: var(--success);
-        background: rgba(209, 250, 229, 0.9);
+      .btn.processing::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s linear infinite;
       }
 
       @keyframes spin {
@@ -158,73 +162,76 @@
         }
       }
 
-      .spinner {
-        width: 14px;
-        height: 14px;
-        border: 2px solid #ffffff;
-        border-top-color: transparent;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
+      .message {
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+        font-size: 14px;
         display: none;
       }
 
-      button.processing .spinner {
-        display: inline-block;
+      .error {
+        background: #fee;
+        color: #d63384;
+        border: 1px solid #f5c2c7;
       }
 
-      .keyboard-shortcut {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        margin-top: 0.5rem;
-        font-size: 0.75rem;
-        color: #64748b;
+      .success {
+        background: #d1e7dd;
+        color: #0f5132;
+        border: 1px solid #badbcc;
       }
 
-      .key {
-        padding: 0.125rem 0.375rem;
-        background: rgba(0, 0, 0, 0.05);
-        border-radius: 0.25rem;
-        font-family: monospace;
+      .footer {
+        text-align: center;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .footer-text {
+        font-size: 11px;
+        color: #6c757d;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="logo">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <path
-            d="M3 7c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v2c0 1.1-.9 2-2 2h-14c-1.1 0-2-.9-2-2v-2zm0 8c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v2c0 1.1-.9 2-2 2h-14c-1.1 0-2-.9-2-2v-2z"
-          />
-        </svg>
-        <h1>SortFree</h1>
+      <div class="header">
+        <div class="logo">SortFree</div>
+        <div class="subtitle">AI-Powered Content Organization</div>
       </div>
-      <div class="input-group">
-        <label for="prompt">Sort/Filter Prompt</label>
-        <textarea
-          id="prompt"
-          placeholder="e.g., Sort by price from lowest to highest"
-        ></textarea>
-        <div class="suggestions">
-          <span class="suggestion">Sort by date</span>
-          <span class="suggestion">Group by category</span>
-          <span class="suggestion">Filter newest first</span>
-        </div>
-      </div>
-      <button id="processBtn">
-        <div class="spinner"></div>
-        <span>Process Content</span>
-      </button>
+
       <div id="error" class="message error"></div>
       <div id="success" class="message success"></div>
-      <div class="keyboard-shortcut">
-        Shortcut: <span class="key">Enter</span>
+
+      <div class="form-group">
+        <label for="prompt">Describe how you want to sort/organize this page:</label>
+        <textarea 
+          id="prompt" 
+          placeholder="E.g., 'Sort products by price, lowest to highest' or 'Group articles by category'"
+        ></textarea>
+      </div>
+
+      <div class="suggestions">
+        <div class="suggestions-title">Quick suggestions:</div>
+        <div class="suggestion-grid">
+          <div class="suggestion">Sort by price</div>
+          <div class="suggestion">Group by category</div>
+          <div class="suggestion">Sort by date</div>
+          <div class="suggestion">Alphabetical order</div>
+        </div>
+      </div>
+
+      <button id="processBtn" class="btn">
+        <span>Process Content</span>
+      </button>
+
+      <div class="footer">
+        <div class="footer-text">v2.0 • Powered by Gemini AI</div>
       </div>
     </div>
-    <script src="popup.js"></script>
+
+    <script src="dist/popup.js"></script>
   </body>
 </html>

@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Auth0Provider, AppState } from '@auth0/auth0-react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth0();
+interface AppProps { }
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  return isAuthenticated ? children : <Navigate to="/" />;
-};
-
-function App() {
+const App: React.FC<AppProps> = () => {
   // Initialize dark mode from localStorage or system preference
-  const [darkMode, setDarkMode] = useState(() => {
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
     const savedMode = localStorage.getItem('darkMode');
     if (savedMode !== null) {
       return JSON.parse(savedMode);
@@ -25,7 +17,7 @@ function App() {
   });
 
   // Toggle dark mode function
-  const toggleDarkMode = () => {
+  const toggleDarkMode = (): void => {
     setDarkMode(prevMode => !prevMode);
   };
 
@@ -42,7 +34,7 @@ function App() {
   // Listen for system theme changes
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e) => {
+    const handleChange = (e: MediaQueryListEvent): void => {
       if (localStorage.getItem('darkMode') === null) {
         setDarkMode(e.matches);
       }
@@ -53,7 +45,7 @@ function App() {
   }, []);
 
   // Function to handle Auth0 redirect callback
-  const onRedirectCallback = (appState) => {
+  const onRedirectCallback = (appState?: AppState): void => {
     window.history.replaceState(
       {},
       document.title,
@@ -74,9 +66,8 @@ function App() {
       cacheLocation="localstorage"
     >
       <Router>
-        <div className={`App min-h-screen transition-colors duration-300 ${
-          darkMode ? 'dark bg-background-dark' : 'bg-background-light'
-        }`}>
+        <div className={`App min-h-screen transition-colors duration-300 ${darkMode ? 'dark bg-background-dark' : 'bg-background-light'
+          }`}>
           <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
           <Routes>
             <Route path="/" element={<Hero darkMode={darkMode} />} />
@@ -85,6 +76,6 @@ function App() {
       </Router>
     </Auth0Provider>
   );
-}
+};
 
 export default App;

@@ -1,15 +1,66 @@
+// Interfaces for data structures
+interface CellData {
+  text: string;
+  words: number;
+}
+
+interface ProcessedTableData {
+  headers: string[];
+  chunks: string[][][];
+  totalChunks: number;
+}
+
+interface DataMetadata {
+  processedAt: string;
+  hasTable: boolean;
+  contentType: 'table' | 'text';
+  exceedsLimit: boolean;
+  totalWords: number;
+  styles: {
+    fontFamily?: string;
+    backgroundColor?: string;
+    color?: string;
+  };
+  sourceUrl: string;
+  title: string;
+}
+
+interface ProcessData {
+  metadata: DataMetadata;
+  data: CellData[][] | string;
+}
+
+interface BackgroundMessageRequest {
+  action: string;
+  data?: ProcessData;
+  userPrompt?: string;
+}
+
+interface APIResponse {
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{
+        text?: string;
+      }>;
+    };
+  }>;
+  error?: {
+    message?: string;
+  };
+}
+
 // Utility functions for content processing
 const ContentProcessor = {
-  processLargeTable(data) {
+  processLargeTable(data: CellData[][]): ProcessedTableData {
     // Convert table data to a more manageable format
-    const headers = data[0].map(cell => cell.text);
-    const rows = data.slice(1).map(row => 
-      row.map(cell => cell.text)
+    const headers = data[0].map((cell: CellData) => cell.text);
+    const rows = data.slice(1).map((row: CellData[]) => 
+      row.map((cell: CellData) => cell.text)
     );
 
     // Group rows into chunks of 1000
     const chunkSize = 1000;
-    const chunks = [];
+    const chunks: string[][][] = [];
     for (let i = 0; i < rows.length; i += chunkSize) {
       chunks.push(rows.slice(i, i + chunkSize));
     }
@@ -21,9 +72,9 @@ const ContentProcessor = {
     };
   },
 
-  generateTablePrompt(data, userPrompt, chunk = null) {
+  generateTablePrompt(data: ProcessData, userPrompt: string, chunk?: string[][]): string {
     if (data.metadata.exceedsLimit) {
-      const processed = this.processLargeTable(data.data);
+      const processed = this.processLargeTable(data.data as CellData[][]);
       const currentChunk = chunk || processed.chunks[0];
       
       return `As a data organization expert, create an HTML table with this data, sorted according to: "${userPrompt}"
@@ -75,7 +126,7 @@ Example format:
 </table>`;
   },
 
-  generateTextPrompt(data, userPrompt) {
+  generateTextPrompt(data: ProcessData, userPrompt: string): string {
     return `As a content organization expert, create semantic HTML with this content, organized according to: "${userPrompt}"
 
 Content: ${data.data}
@@ -89,7 +140,7 @@ Requirements:
 6. Include all original content`;
   },
 
-  async callAPI(prompt) {
+  async callAPI(promptText: string): Promise<string> {
     const API_KEY = '';
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
@@ -97,7 +148,7 @@ Requirements:
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          contents: [{ role: 'user', parts: [{ text: promptText }] }],
           generationConfig: {
             temperature: 0.2,
             topK: 40,
@@ -109,15 +160,15 @@ Requirements:
     );
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
+      const error = await response.json().catch(() => ({})) as APIResponse;
       throw new Error(error.error?.message || 'API request failed');
     }
 
-    const result = await response.json();
-    return result.candidates?.[0]?.content?.parts?.[0]?.text;
+    const result = await response.json() as APIResponse;
+    return result.candidates?.[0]?.content?.parts?.[0]?.text || '';
   },
 
-  validateTableHTML(html) {
+  validateTableHTML(html: string): boolean {
     // Check for basic table structure
     const hasTable = html.includes('<table') && html.includes('</table>');
     const hasThead = html.includes('<thead') && html.includes('</thead>');
@@ -128,12 +179,12 @@ Requirements:
     return hasTable && hasThead && hasTbody && hasHeaders && hasData;
   },
 
-  async processLargeTableContent(data, prompt) {
-    const processed = this.processLargeTable(data.data);
+  async processLargeTableContent(data: ProcessData, userPrompt: string): Promise<string> {
+    const processed = this.processLargeTable(data.data as CellData[][]);
     let combinedContent = '';
 
     for (let i = 0; i < processed.chunks.length; i++) {
-      const chunkPrompt = this.generateTablePrompt(data, prompt, processed.chunks[i]);
+              const chunkPrompt = this.generateTablePrompt(data, userPrompt, processed.chunks[i]);
       const chunkContent = await this.callAPI(chunkPrompt);
       
       // Validate and clean table HTML
@@ -158,7 +209,7 @@ Requirements:
     return combinedContent;
   },
 
-  generateHTML(content, data, prompt) {
+  generateHTML(content: string, data: ProcessData, userPrompt: string): string {
     const { styles, sourceUrl, title } = data.metadata;
     
     return `<!DOCTYPE html>
@@ -200,16 +251,14 @@ Requirements:
         .navbar {
             background: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
-            padding: 0.75rem 1rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(8px);
+            padding: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .nav-content {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0 1rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -339,7 +388,7 @@ Requirements:
         <div class="content-card">
             <div class="header">
                 <h1>${title}</h1>
-                <div class="prompt">Organized by: ${prompt}</div>
+                <div class="prompt">Organized by: ${userPrompt}</div>
             </div>
             ${content}
         </div>
@@ -349,7 +398,7 @@ Requirements:
   }
 };
 
-async function processContent(data, prompt, retryCount = 0) {
+async function processContent(data: ProcessData, userPrompt: string, retryCount: number = 0): Promise<string> {
   const MAX_RETRIES = 3;
 
   try {
@@ -357,16 +406,16 @@ async function processContent(data, prompt, retryCount = 0) {
       throw new Error('Invalid data format');
     }
 
-    let formattedContent;
+    let formattedContent: string;
 
     if (data.metadata.hasTable && data.metadata.exceedsLimit) {
       // Process large table in chunks
-      formattedContent = await ContentProcessor.processLargeTableContent(data, prompt);
+      formattedContent = await ContentProcessor.processLargeTableContent(data, userPrompt);
     } else {
       // Process normal content or small tables
       const apiPrompt = data.metadata.hasTable
-        ? ContentProcessor.generateTablePrompt(data, prompt)
-        : ContentProcessor.generateTextPrompt(data, prompt);
+        ? ContentProcessor.generateTablePrompt(data, userPrompt)
+        : ContentProcessor.generateTextPrompt(data, userPrompt);
 
       formattedContent = await ContentProcessor.callAPI(apiPrompt);
     }
@@ -374,7 +423,7 @@ async function processContent(data, prompt, retryCount = 0) {
     if (!formattedContent || formattedContent.trim().length < 100) {
       if (retryCount < MAX_RETRIES) {
         console.log(`Retrying due to invalid content (attempt ${retryCount + 1})`);
-        return processContent(data, prompt, retryCount + 1);
+        return processContent(data, userPrompt, retryCount + 1);
       }
       throw new Error('Generated content is invalid or too short');
     }
@@ -382,27 +431,32 @@ async function processContent(data, prompt, retryCount = 0) {
     // Validate table content if necessary
     if (data.metadata.hasTable && !ContentProcessor.validateTableHTML(formattedContent)) {
       if (retryCount < MAX_RETRIES) {
-        return processContent(data, prompt, retryCount + 1);
+        return processContent(data, userPrompt, retryCount + 1);
       }
       throw new Error('Invalid table format received');
     }
 
     // Generate final HTML
-    return ContentProcessor.generateHTML(formattedContent, data, prompt);
+    return ContentProcessor.generateHTML(formattedContent, data, userPrompt);
   } catch (error) {
     if (retryCount < MAX_RETRIES) {
-      console.log(`Processing failed, retrying (attempt ${retryCount + 1}): ${error.message}`);
-      return processContent(data, prompt, retryCount + 1);
+      console.log(`Processing failed, retrying (attempt ${retryCount + 1}): ${error instanceof Error ? error.message : 'Unknown error'}`);
+      return processContent(data, userPrompt, retryCount + 1);
     }
-    throw new Error(`Failed to process content: ${error.message}`);
+    throw new Error(`Failed to process content: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
 // Message handler
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request: BackgroundMessageRequest, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void): boolean => {
   if (request.action === 'generateSortedContent') {
-    processContent(request.data, request.prompt)
-      .then((html) => {
+    if (!request.data || !request.userPrompt) {
+      sendResponse({ error: 'Missing required data or prompt' });
+      return false;
+    }
+
+    processContent(request.data, request.userPrompt)
+      .then((html: string): void => {
         if (!html || html.trim().length < 100) {
           sendResponse({ error: 'Generated content is empty or invalid' });
           return;
@@ -412,10 +466,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         sendResponse({ success: true });
       })
-      .catch((error) => {
+      .catch((error: Error): void => {
         console.error('Processing error:', error);
         sendResponse({ error: error.message });
       });
     return true;
   }
+  return false;
 });

@@ -1,10 +1,22 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 
-const ContentSortingLabel = ({ darkMode = false }) => {
-  const theme = {
-    background: darkMode 
+interface ContentSortingLabelProps {
+  darkMode?: boolean;
+}
+
+interface Theme {
+  background: string;
+  text: string;
+  border: string;
+  highlight: string;
+  shadow: string;
+}
+
+const ContentSortingLabel: React.FC<ContentSortingLabelProps> = ({ darkMode = false }) => {
+  const theme: Theme = {
+    background: darkMode
       ? 'bg-gradient-to-r from-primary-900/30 to-primary-800/30'
       : 'bg-gradient-to-r from-primary-100/50 to-primary-200/50',
     text: darkMode
@@ -21,8 +33,8 @@ const ContentSortingLabel = ({ darkMode = false }) => {
       : 'shadow-primary-300/40'
   };
 
-  const labelVariants = {
-    initial: { 
+  const labelVariants: Variants = {
+    initial: {
       opacity: 0,
       y: -20,
       scale: 0.95
@@ -48,7 +60,7 @@ const ContentSortingLabel = ({ darkMode = false }) => {
     }
   };
 
-  const pulseVariants = {
+  const pulseVariants: Variants = {
     animate: {
       scale: [1, 1.05, 1],
       opacity: [0.5, 0.8, 0.5],
@@ -70,21 +82,21 @@ const ContentSortingLabel = ({ darkMode = false }) => {
     >
       <div className="relative inline-flex items-center justify-center">
         {/* Ambient glow effect */}
-        <motion.div 
+        <motion.div
           className={`
             absolute -inset-2 
             bg-gradient-to-r from-primary-300/20 via-primary-400/20 to-primary-300/20 
             blur-xl opacity-50
           `}
         />
-        
+
         {/* Pulsing background effect */}
         <motion.div
           className={`absolute inset-0 rounded-full ${theme.highlight}`}
           variants={pulseVariants}
           animate="animate"
         />
-        
+
         {/* Main label container */}
         <motion.div
           className={`

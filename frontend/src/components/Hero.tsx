@@ -1,17 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Zap, Brain, Sparkles, Sliders, ArrowRight, Download } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import ContentSortingLabel from './ContentSortingLabel';
 
-const Hero = ({ darkMode }) => {
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
-  const containerRef = useRef(null);
-  const [containerWidth, setContainerWidth] = useState(0);
-  const [cardWidth, setCardWidth] = useState(0);
+interface HeroProps {
+  darkMode: boolean;
+}
 
-  const heroVariants = {
+interface Stat {
+  id: number;
+  label: string;
+  value: string;
+  icon: React.ComponentType<any>;
+  position: number;
+}
+
+const Hero: React.FC<HeroProps> = ({ darkMode }) => {
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const heroVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
@@ -23,7 +33,7 @@ const Hero = ({ darkMode }) => {
     }
   };
 
-  const shimmerVariants = {
+  const shimmerVariants: Variants = {
     initial: { x: '-100%', opacity: 0.5 },
     animate: {
       x: '100%',
@@ -36,14 +46,14 @@ const Hero = ({ darkMode }) => {
     }
   };
 
-  const [stats] = useState([
+  const [stats] = useState<Stat[]>([
     { id: 1, label: "Leverage Gemini 1.5 Pro ", value: "AI Powered", icon: Brain, position: 0 },
     { id: 2, label: "2 Million Tokens ", value: "Context", icon: Sparkles, position: 1 },
     { id: 3, label: "Load content at warp speed", value: "Super Fast", icon: Zap, position: 2 },
     { id: 4, label: "Your Way :)", value: "Customization?", icon: Sliders, position: 3 },
   ]);
 
-  const launchConfetti = () => {
+  const launchConfetti = (): void => {
     confetti({
       particleCount: 100,
       spread: 70,
@@ -52,7 +62,7 @@ const Hero = ({ darkMode }) => {
     });
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (): Promise<void> => {
     try {
       await loginWithRedirect({
         authorizationParams: {
@@ -67,11 +77,10 @@ const Hero = ({ darkMode }) => {
   };
 
   useEffect(() => {
-    const updateDimensions = () => {
+    const updateDimensions = (): void => {
       if (containerRef.current) {
         const width = containerRef.current.offsetWidth;
-        setContainerWidth(width);
-        setCardWidth(width / 4 - 24);
+        console.log('Container width:', width);
       }
     };
 
@@ -85,30 +94,30 @@ const Hero = ({ darkMode }) => {
       initial="hidden"
       animate="visible"
       variants={heroVariants}
-      className={`relative pt-24 pb-32 overflow-hidden
+      className={`relative pt-24 pb-32 overflow-hidden min-h-screen
         ${darkMode
           ? 'bg-gradient-to-br from-background-dark via-primary-950/20 to-primary-950/40'
           : 'bg-gradient-to-br from-background-light via-primary-100/50 to-primary-200/30'}`}
     >
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-radial from-primary-500/10 to-transparent"></div>
+        <div className="absolute inset-0 to-transparent bg-gradient-radial from-primary-500/10"></div>
         <div className={`absolute inset-0 opacity-35 
           ${darkMode ? 'bg-[url("/noise-dark.png")]' : 'bg-[url("/noise-light.png")]'}`}
         ></div>
       </div>
 
-      <div className="container relative z-10 px-4 mx-auto sm:px-6 lg:px-8">
+      <div className="container relative z-10 px-6 mx-auto max-w-7xl sm:px-8 lg:px-12">
         <div className="mb-8">
           <ContentSortingLabel darkMode={darkMode} />
         </div>
 
         <motion.div
           variants={heroVariants}
-          className="max-w-4xl mx-auto text-center"
+          className="mx-auto max-w-5xl text-center"
         >
           <motion.h1
             variants={heroVariants}
-            className={`text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'}`}
+            className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal tracking-tight leading-tight ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'} text-center`}
           >
             Simplify Your Sorting with{' '}
             <motion.span
@@ -117,7 +126,7 @@ const Hero = ({ darkMode }) => {
                 backgroundColor: darkMode ? 'rgba(62,164,167,0.2)' : 'rgba(62,164,167,0.15)',
               }}
               transition={{ duration: 0.5 }}
-              className="relative inline-block px-2 rounded-md text-primary-500"
+              className="inline-block relative px-3 py-1 rounded-lg text-primary-500"
             >
               SortFree.AI
             </motion.span>
@@ -125,54 +134,54 @@ const Hero = ({ darkMode }) => {
 
           <motion.p
             variants={heroVariants}
-            className={`mt-6 text-xl font-light leading-relaxed ${darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'} max-w-3xl mx-auto`}
+            className={`mt-6 text-lg sm:text-xl font-light leading-relaxed ${darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'} max-w-3xl mx-auto px-4 sm:px-0`}
           >
             Effortlessly sort your web with AI. Paste, set, and let Sortfree work its magic.
           </motion.p>
 
           <motion.div
             variants={heroVariants}
-            className="flex flex-col justify-center gap-4 mt-10 sm:flex-row"
+            className="flex flex-col gap-4 justify-center items-center mt-10 sm:flex-row sm:gap-6"
           >
             {!isAuthenticated ? (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleLogin}
-                className="relative flex items-center justify-center px-8 py-3 overflow-hidden font-normal text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-ambient hover:shadow-ambient-lg"
+                className="flex overflow-hidden relative justify-center items-center px-8 py-4 w-full sm:w-auto min-w-[220px] font-medium text-white bg-gradient-to-r rounded-xl transition-all duration-300 from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-ambient hover:shadow-ambient-lg"
               >
                 <motion.div
                   variants={shimmerVariants}
                   initial="initial"
                   animate="animate"
-                  className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                  className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent to-transparent via-white/20"
                 />
-                Get Started <ArrowRight className="w-5 h-5 ml-2" />
+                Get Started <ArrowRight className="ml-2 w-5 h-5" />
               </motion.button>
             ) : (
               <>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center justify-center px-8 py-3 font-normal text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-ambient hover:shadow-ambient-lg"
+                  className="flex justify-center items-center px-8 py-4 w-full sm:w-auto min-w-[220px] font-medium text-white bg-gradient-to-r rounded-xl transition-all duration-300 from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-ambient hover:shadow-ambient-lg"
                 >
-                  Get Started <ArrowRight className="w-5 h-5 ml-2" />
+                  Get Started <ArrowRight className="ml-2 w-5 h-5" />
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={launchConfetti}
-                  className="flex items-center justify-center px-8 py-3 font-normal text-white transition-all duration-300 rounded-xl bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 shadow-ambient hover:shadow-ambient-lg"
+                  className="flex justify-center items-center px-8 py-4 w-full sm:w-auto min-w-[220px] font-medium text-white bg-gradient-to-r rounded-xl transition-all duration-300 from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 shadow-ambient hover:shadow-ambient-lg"
                 >
-                  <Download className="w-5 h-5 mr-2" />
+                  <Download className="mr-2 w-5 h-5" />
                   Download Extension
                 </motion.button>
               </>
             )}
           </motion.div>
 
-          <div ref={containerRef} className="relative h-auto max-w-6xl mx-auto mt-20">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div ref={containerRef} className="relative mx-auto mt-20 max-w-6xl">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {stats.map((stat) => {
                 const Icon = stat.icon;
                 return (
@@ -193,28 +202,34 @@ const Hero = ({ darkMode }) => {
                       transition-all duration-300
                       hover:shadow-ambient-lg
                       w-full
+                      h-[200px]
+                      flex flex-col justify-center
                     `}
                   >
-                    <div className="flex flex-col items-center gap-4">
+                    <div className="flex flex-col gap-4 items-center">
                       <motion.div
                         whileHover={{ scale: 1.1 }}
                         className={`
-                          w-12 h-12 rounded-full
+                          w-12 h-12 rounded-xl
+                          ${darkMode
+                            ? 'bg-primary-800/40'
+                            : 'bg-primary-100'}
                           flex items-center justify-center
-                          ${darkMode ? 'bg-primary-700/50' : 'bg-primary-100'}
-                          backdrop-blur-sm
                         `}
                       >
                         <Icon className={`w-6 h-6 ${darkMode ? 'text-primary-300' : 'text-primary-600'}`} />
                       </motion.div>
-
-                      <div>
-                        <h3 className={`text-xl font-normal mb-1 ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'}`}>
+                      <div className="text-center">
+                        <motion.div
+                          className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-text-dark-primary' : 'text-text-light-primary'} mb-2`}
+                        >
                           {stat.value}
-                        </h3>
-                        <p className={`text-sm font-light ${darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'}`}>
+                        </motion.div>
+                        <motion.div
+                          className={`text-xs sm:text-sm ${darkMode ? 'text-text-dark-secondary' : 'text-text-light-secondary'} leading-relaxed`}
+                        >
                           {stat.label}
-                        </p>
+                        </motion.div>
                       </div>
                     </div>
                   </motion.div>
